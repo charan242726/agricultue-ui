@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgroEase – Smart Farming with Data-Driven Insights</title>
+  <meta name="description"
+    content="Empowering farmers with technology and simplicity. AgroEase provides smart farming tools, crop recommendations, weather insights, and profit estimation.">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+</head>
+
+<body>
+
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loading-screen">
+    <div class="loading-logo">
+      <span>🌾</span> AgroEase
+    </div>
+    <div class="loading-bar-container">
+      <div class="loading-bar"></div>
+    </div>
+  </div>
+
+  <!-- Animated Background -->
+  <div class="bg-animated"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <!-- Navigation -->
+  <nav class="landing-nav navbar" id="landing-nav">
+    <div class="nav-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon">🌾</span> AgroEase
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#cta">Get Started</a></li>
+        <li><a href="login.html" class="btn btn-primary">Open Dashboard</a></li>
+      </ul>
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <div class="hero-content">
+      <div class="hero-text" data-aos="fade-right" data-aos-duration="1000">
+        <div class="hero-badge">
+          🚀 Next-Gen Farming Platform
+        </div>
+        <h1 class="hero-title">
+          Smart Farming with <br><span class="gradient-text">Data-Driven Insights</span>
+        </h1>
+        <p class="hero-desc">
+          Empowering farmers with technology and simplicity. Monitor crops,
+          track weather, analyze soil health, and maximize your profits — all in one place.
+        </p>
+        <div class="hero-buttons">
+          <a href="login.html" class="btn btn-primary btn-lg" id="hero-cta">
+            Open Dashboard →
+          </a>
+          <a href="#features" class="btn btn-outline btn-lg" id="hero-learn">
+            Learn More
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-value">10K+</div>
+            <div class="hero-stat-label">Active Farmers</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value">95%</div>
+            <div class="hero-stat-label">Accuracy</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value">₹2Cr+</div>
+            <div class="hero-stat-label">Profit Generated</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+        <div class="hero-visual-grid">
+          <div class="glass-card hero-card">
+            <div class="hero-card-icon">🌡️</div>
+            <div class="hero-card-title">Temperature</div>
+            <div class="hero-card-value">28°C</div>
+            <div class="hero-card-trend">☀️ Sunny</div>
+          </div>
+          <div class="glass-card hero-card">
+            <div class="hero-card-icon">🌾</div>
+            <div class="hero-card-title">Active Crops</div>
+            <div class="hero-card-value">12</div>
+            <div class="hero-card-trend">↑ 3 this season</div>
+          </div>
+          <div class="glass-card hero-card">
+            <div class="hero-card-icon">📊</div>
+            <div class="hero-card-title">Yield Prediction</div>
+            <div class="hero-card-value">4.2T</div>
+            <div class="hero-card-trend">↑ 15% vs last year</div>
+          </div>
+          <div class="glass-card hero-card">
+            <div class="hero-card-icon">💰</div>
+            <div class="hero-card-title">Revenue Est.</div>
+            <div class="hero-card-value">₹8.5L</div>
+            <div class="hero-card-trend">↑ 22% growth</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Wave Separator -->
+  <div class="wave-separator">
+    <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+      <path fill="rgba(255,255,255,0.3)"
+        d="M0,48L48,42.7C96,37,192,27,288,32C384,37,480,59,576,58.7C672,59,768,37,864,26.7C960,16,1056,16,1152,26.7C1248,37,1344,59,1392,69.3L1440,80L1440,80L1392,80C1344,80,1248,80,1152,80C1056,80,960,80,864,80C768,80,672,80,576,80C480,80,384,80,288,80C192,80,96,80,48,80L0,80Z" />
+    </svg>
+  </div>
+
+  <!-- Features Section -->
+  <section class="features-section" id="features">
+    <div class="features-header" data-aos="fade-up">
+      <h2 class="section-title">Everything You Need to <span class="highlight">Farm Smarter</span></h2>
+      <p class="section-subtitle">Powerful tools designed for modern agriculture</p>
+    </div>
+    <div class="features-grid">
+      <div class="glass-card feature-card" data-aos="fade-up" data-aos-delay="0">
+        <div class="feature-icon">🌦️</div>
+        <h3 class="feature-title">Weather Intelligence</h3>
+        <p class="feature-desc">Real-time weather monitoring with rain predictions and smart alerts to plan your farming
+          activities.</p>
+      </div>
+      <div class="glass-card feature-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="feature-icon">🌱</div>
+        <h3 class="feature-title">Crop Recommendations</h3>
+        <p class="feature-desc">AI-powered crop suggestions based on your soil type, season, and water availability for
+          maximum yield.</p>
+      </div>
+      <div class="glass-card feature-card" data-aos="fade-up" data-aos-delay="200">
+        <div class="feature-icon">🧪</div>
+        <h3 class="feature-title">Soil Health Analysis</h3>
+        <p class="feature-desc">Monitor pH, nitrogen, phosphorus, and potassium levels with visual indicators.</p>
+      </div>
+      <div class="glass-card feature-card" data-aos="fade-up" data-aos-delay="300">
+        <div class="feature-icon">💰</div>
+        <h3 class="feature-title">Market Tracker</h3>
+        <p class="feature-desc">Live crop prices and trend analysis to help you sell at the best possible time.</p>
+      </div>
+      <div class="glass-card feature-card" data-aos="fade-up" data-aos-delay="400">
+        <div class="feature-icon">📅</div>
+        <h3 class="feature-title">Smart Scheduler</h3>
+        <p class="feature-desc">Auto-generate watering, fertilizer, and harvest schedules with calendar views.</p>
+      </div>
+      <div class="glass-card feature-card" data-aos="fade-up" data-aos-delay="500">
+        <div class="feature-icon">📈</div>
+        <h3 class="feature-title">Profit Estimator</h3>
+        <p class="feature-desc">Calculate expected revenue, costs, and profits with interactive charts and insights.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how-section" id="how-it-works">
+    <div class="how-inner">
+      <div class="how-header" data-aos="fade-up">
+        <h2 class="section-title">How <span class="highlight">AgroEase</span> Works</h2>
+        <p class="section-subtitle">Get started in four simple steps</p>
+      </div>
+      <div class="how-steps">
+        <div class="glass-card how-step" data-aos="zoom-in" data-aos-delay="0">
+          <div class="how-step-num">1</div>
+          <h3 class="how-step-title">Input Your Data</h3>
+          <p class="how-step-desc">Enter your land area, soil type, and available resources.</p>
+        </div>
+        <div class="glass-card how-step" data-aos="zoom-in" data-aos-delay="150">
+          <div class="how-step-num">2</div>
+          <h3 class="how-step-title">Get Insights</h3>
+          <p class="how-step-desc">Receive crop recommendations, weather alerts, and soil analysis.</p>
+        </div>
+        <div class="glass-card how-step" data-aos="zoom-in" data-aos-delay="300">
+          <div class="how-step-num">3</div>
+          <h3 class="how-step-title">Plan & Schedule</h3>
+          <p class="how-step-desc">Auto-generate farming schedules with smart task management.</p>
+        </div>
+        <div class="glass-card how-step" data-aos="zoom-in" data-aos-delay="450">
+          <div class="how-step-num">4</div>
+          <h3 class="how-step-title">Maximize Profit</h3>
+          <p class="how-step-desc">Track markets and estimate profits to grow your revenue.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section" id="cta">
+    <div class="glass-card cta-card" data-aos="fade-up">
+      <h2 class="cta-title">Ready to <span class="gradient-text">Transform Your Farm?</span></h2>
+      <p class="cta-desc">Join thousands of farmers using AgroEase to grow smarter, not harder.</p>
+      <a href="login.html" class="btn btn-primary btn-lg" id="cta-dashboard-btn">
+        🚀 Launch Dashboard
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <div class="footer-inner">
+      <div class="footer-text">
+        © 2026 AgroEase. Crafted with 💚 for farmers worldwide.
+      </div>
+      <div class="footer-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    // Loading screen
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loading-screen').classList.add('hidden');
+      }, 2000);
+    });
+
+    // AOS Init
+    AOS.init({
+      once: true,
+      easing: 'ease-out-cubic',
+      duration: 800,
+    });
+
+    // Mobile menu
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const navLinks = document.getElementById('nav-links');
+    menuBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+
+    // Close menu on link click
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+      });
+    });
+  </script>
+</body>
+
+</html>

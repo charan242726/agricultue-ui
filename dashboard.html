@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgroEase Dashboard – Smart Farming Control Center</title>
+  <meta name="description" content="AgroEase Dashboard: Monitor weather, manage crops, analyze soil, track markets, schedule tasks, and estimate profits for your farm.">
+  <link rel="stylesheet" href="css/styles.css">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loading-screen">
+    <div class="loading-logo">
+      <span>🌾</span> AgroEase
+    </div>
+    <div class="loading-bar-container">
+      <div class="loading-bar"></div>
+    </div>
+  </div>
+
+  <!-- Animated Background -->
+  <div class="bg-animated"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- Search Overlay -->
+  <div class="search-overlay" id="search-overlay">
+    <div class="search-overlay-backdrop" id="search-backdrop"></div>
+    <div class="search-overlay-box glass-card">
+      <div class="search-box-header">
+        <span class="search-box-icon">🔍</span>
+        <input type="text" id="search-overlay-input" class="search-overlay-input" placeholder="Search panels, features, crops..." autocomplete="off" />
+        <button class="search-close-btn" id="search-close-btn" aria-label="Close">✕</button>
+      </div>
+      <div class="search-quick-links">
+        <span class="search-quick-label">Quick:</span>
+        <button class="search-quick-btn" data-panel="dashboard">📊 Dashboard</button>
+        <button class="search-quick-btn" data-panel="weather">🌦️ Weather</button>
+        <button class="search-quick-btn" data-panel="fertilizer">🧪 Fertilizer</button>
+        <button class="search-quick-btn" data-panel="soil">🧪 Soil</button>
+        <button class="search-quick-btn" data-panel="market">💰 Market</button>
+        <button class="search-quick-btn" data-panel="scheduler">📅 Scheduler</button>
+        <button class="search-quick-btn" data-panel="profit">💸 Profit</button>
+      </div>
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </div>
+
+  <!-- Dashboard Layout -->
+  <div class="dashboard-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="sidebar-logo">
+        🌾 AgroEase <span class="logo-dot"></span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <div class="sidebar-label">Main</div>
+        <button class="sidebar-link active" data-panel="dashboard" id="nav-dashboard">
+          <span class="link-icon">📊</span> Dashboard
+        </button>
+        <button class="sidebar-link" data-panel="weather" id="nav-weather">
+          <span class="link-icon">🌦️</span> Weather
+        </button>
+        <button class="sidebar-link" data-panel="soil" id="nav-soil">
+          <span class="link-icon">🧪</span> Soil Test
+        </button>
+
+        <div class="sidebar-label">Analytics</div>
+        <button class="sidebar-link" data-panel="market" id="nav-market">
+          <span class="link-icon">💰</span> Market
+        </button>
+        <button class="sidebar-link" data-panel="fertilizer" id="nav-fertilizer">
+          <span class="link-icon">🧪</span> Fertilizer
+        </button>
+        <button class="sidebar-link" data-panel="scheduler" id="nav-scheduler">
+          <span class="link-icon">📅</span> Scheduler
+        </button>
+        <button class="sidebar-link" data-panel="profit" id="nav-profit">
+          <span class="link-icon">💸</span> Profit Estimator
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar" id="sidebar-avatar">U</div>
+          <div class="sidebar-user-info">
+            <div class="user-name" id="user-name">User</div>
+            <div class="user-location" id="user-location"></div>
+            <div class="user-role">Premium Farmer</div>
+          </div>
+        </div>
+        <button class="sidebar-link" id="logout-btn" type="button">
+          <span class="link-icon">🚪</span> Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="topbar-hamburger" id="topbar-hamburger" aria-label="Toggle sidebar">☰</button>
+          <h1 class="topbar-title" id="topbar-title">Dashboard</h1>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-icon-btn" id="search-btn" aria-label="Search">🔍</button>
+          <div class="notif-wrapper" id="notif-wrapper">
+            <button class="topbar-icon-btn" id="notification-btn" aria-label="Notifications">
+              🔔
+              <span class="notification-badge" id="notif-badge">3</span>
+            </button>
+            <div class="notif-dropdown" id="notif-dropdown">
+              <div class="notif-dropdown-header">
+                <span class="notif-dropdown-title">🔔 Notifications</span>
+                <button class="notif-markall-btn" id="notif-markall-btn">Mark all read</button>
+              </div>
+              <div class="notif-list" id="notif-list"><!-- filled by JS --></div>
+            </div>
+          </div>
+          <div class="topbar-avatar" id="topbar-avatar">U</div>
+        </div>
+      </header>
+
+      <!-- Dashboard Content -->
+      <div class="dashboard-content">
+
+        <!-- ═══ DASHBOARD PANEL ═══ -->
+        <div class="panel active" id="panel-dashboard">
+          <div class="panel-header">
+            <h2 class="panel-subtitle" id="welcome">Welcome, Farmer 🌱</h2>
+            <h2 class="panel-title">📊 Overview</h2>
+            <p class="panel-subtitle">Your farming operations at a glance</p>
+          </div>
+
+          <!-- Stat Cards -->
+          <div class="stats-grid">
+            <div class="glass-card stat-card">
+              <div class="stat-icon-wrapper stat-icon-green">🏞️</div>
+              <div class="stat-info">
+                <div class="stat-label">Total Land</div>
+                <div class="stat-value" id="stat-land">25 Acres</div>
+                <div class="stat-trend up">↑ 5 acres added</div>
+              </div>
+            </div>
+            <div class="glass-card stat-card">
+              <div class="stat-icon-wrapper stat-icon-blue">🌾</div>
+              <div class="stat-info">
+                <div class="stat-label">Active Crops</div>
+                <div class="stat-value" id="stat-crops">12</div>
+                <div class="stat-trend up">↑ 3 new this season</div>
+              </div>
+            </div>
+            <div class="glass-card stat-card">
+              <div class="stat-icon-wrapper stat-icon-amber">📈</div>
+              <div class="stat-info">
+                <div class="stat-label">Yield Prediction</div>
+                <div class="stat-value" id="stat-yield">4.2 Tons</div>
+                <div class="stat-trend up">↑ 15% vs last year</div>
+              </div>
+            </div>
+            <div class="glass-card stat-card">
+              <div class="stat-icon-wrapper stat-icon-purple">💎</div>
+              <div class="stat-info">
+                <div class="stat-label">Revenue Est.</div>
+                <div class="stat-value" id="stat-revenue">₹8.5L</div>
+                <div class="stat-trend up">↑ 22% growth</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Score + Chart -->
+          <div class="score-section">
+            <div class="glass-card score-card">
+              <div class="score-circle">
+                <svg width="140" height="140" viewBox="0 0 140 140">
+                  <defs>
+                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#16a34a"/>
+                      <stop offset="100%" stop-color="#0ea5e9"/>
+                    </linearGradient>
+                  </defs>
+                  <circle class="score-circle-bg" cx="70" cy="70" r="65"/>
+                  <circle class="score-circle-progress" id="score-progress" cx="70" cy="70" r="65"/>
+                </svg>
+                <div class="score-value">
+                  <span id="score-number">87</span>
+                  <small>/ 100</small>
+                </div>
+              </div>
+              <div class="score-title">Farming Score</div>
+              <div class="score-subtitle">Excellent performance</div>
+            </div>
+
+            <div class="glass-card overview-chart-card">
+              <div class="chart-header">
+                <h3 class="chart-title">Yield Overview</h3>
+                <div class="chart-tabs">
+                  <button class="chart-tab active" data-period="monthly">Monthly</button>
+                  <button class="chart-tab" data-period="quarterly">Quarterly</button>
+                  <button class="chart-tab" data-period="yearly">Yearly</button>
+                </div>
+              </div>
+              <div class="chart-container">
+                <canvas id="overview-chart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ WEATHER PANEL ═══ -->
+        <div class="panel" id="panel-weather">
+          <div class="panel-header">
+            <h2 class="panel-title">🌦️ Weather Intelligence</h2>
+            <p class="panel-subtitle">Live real-time weather · Powered by OpenWeatherMap</p>
+          </div>
+
+          <!-- Search Controls -->
+          <div class="glass-card weather-search-card">
+            <div class="weather-search-row">
+              <div class="weather-search-input-group">
+                <input type="text" id="weather-city-input" class="form-input" placeholder="Enter city name (e.g. Hyderabad, Mumbai)..." />
+                <button class="btn btn-primary" id="weather-search-btn">🔍 Search</button>
+              </div>
+              <button class="btn btn-outline weather-geo-btn" id="weather-location-btn">📍 My Location</button>
+            </div>
+            <div class="api-key-notice" id="api-key-notice" style="display:none">
+              ⚠️ Add your free API key in <code>js/app.js</code> line 7. Get one at <a href="https://openweathermap.org/api" target="_blank">openweathermap.org/api</a>
+            </div>
+          </div>
+
+          <!-- Loading -->
+          <div class="weather-loader-wrap" id="weather-loader" style="display:none">
+            <div class="weather-spinner"></div>
+            <p>Fetching live weather data...</p>
+          </div>
+
+          <!-- Error -->
+          <div class="weather-error-wrap" id="weather-error" style="display:none">
+            <div class="glass-card weather-error-card">
+              <div class="weather-error-icon">⚠️</div>
+              <p id="weather-error-msg">Something went wrong. Please try again.</p>
+              <button class="btn btn-primary" id="weather-retry-btn">Try Again</button>
+            </div>
+          </div>
+
+          <!-- Live Display -->
+          <div id="weather-display" style="display:none">
+            <div class="glass-card weather-hero-card" id="weather-hero-card">
+              <div class="weather-hero-main">
+                <div class="weather-loc-block">
+                  <div class="weather-city-label" id="live-city">--</div>
+                  <div class="weather-country-label" id="live-country">--</div>
+                  <div class="weather-updated-label" id="live-updated">--</div>
+                </div>
+                <div class="weather-center-block">
+                  <div class="weather-big-icon" id="live-icon">☀️</div>
+                  <div class="weather-big-temp" id="live-temp">--°C</div>
+                  <div class="weather-big-desc" id="live-desc">--</div>
+                  <div class="weather-feels-like" id="live-feels">Feels like --°C</div>
+                </div>
+              </div>
+              <div class="weather-stats-row">
+                <div class="wstat-item"><span class="wstat-icon">💧</span><div class="wstat-val" id="live-humidity">--%</div><div class="wstat-lbl">Humidity</div></div>
+                <div class="wstat-item"><span class="wstat-icon">💨</span><div class="wstat-val" id="live-wind">-- km/h</div><div class="wstat-lbl">Wind</div></div>
+                <div class="wstat-item"><span class="wstat-icon">👁️</span><div class="wstat-val" id="live-visibility">-- km</div><div class="wstat-lbl">Visibility</div></div>
+                <div class="wstat-item"><span class="wstat-icon">🌡️</span><div class="wstat-val" id="live-pressure">-- hPa</div><div class="wstat-lbl">Pressure</div></div>
+                <div class="wstat-item"><span class="wstat-icon">🌅</span><div class="wstat-val" id="live-sunrise">--</div><div class="wstat-lbl">Sunrise</div></div>
+                <div class="wstat-item"><span class="wstat-icon">🌇</span><div class="wstat-val" id="live-sunset">--</div><div class="wstat-lbl">Sunset</div></div>
+              </div>
+            </div>
+            <div class="weather-alert" id="weather-alert" style="display:none">
+              <span class="weather-alert-icon">⚠️</span>
+              <span id="weather-alert-text"></span>
+            </div>
+            <div>
+              <h3 class="forecast-section-title">5-Day Outlook</h3>
+              <div class="weather-forecast" id="weather-forecast"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ FERTILIZER PANEL ═══ -->
+        <div class="panel" id="panel-fertilizer">
+
+          <div class="panel-header">
+            <h2 class="panel-title">🧪 Fertilizer Prediction</h2>
+            <p class="panel-subtitle">Get fertilizer suggestions + usage guidance</p>
+          </div>
+
+          <div class="glass-card fertilizer-form">
+            <div class="form-group">
+              <label>Soil Type</label>
+              <select id="fert-soil" class="form-select">
+                <option value="">Select Soil</option>
+                <option value="alluvial">Alluvial</option>
+                <option value="black">Black</option>
+                <option value="red">Red</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Crop</label>
+              <select id="fert-crop" class="form-select">
+                <option value="">Select Crop</option>
+                <option value="rice">Rice</option>
+                <option value="wheat">Wheat</option>
+                <option value="cotton">Cotton</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Soil pH</label>
+              <input type="number" id="fert-ph" class="form-input" placeholder="6.5">
+            </div>
+
+            <div class="form-group">
+              <label>Nitrogen (N)</label>
+              <input type="number" id="fert-n" class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label>Phosphorus (P)</label>
+              <input type="number" id="fert-p" class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label>Potassium (K)</label>
+              <input type="number" id="fert-k" class="form-input">
+            </div>
+
+            <button class="btn btn-primary" id="fert-btn">Predict Fertilizer</button>
+          </div>
+
+          <div id="fert-result" class="fert-result"></div>
+
+          <div class="glass-card fertilizer-info">
+            <h3>📘 How to Use Fertilizers</h3>
+            <ul>
+              <li>Apply fertilizers during early growth stage 🌱</li>
+              <li>Mix fertilizers evenly in soil</li>
+              <li>Water field after applying fertilizer 💧</li>
+              <li>Do not overuse - it can damage crops ❌</li>
+            </ul>
+
+            <h3>⚖️ Recommended Quantities (per acre)</h3>
+
+            <div class="fert-table">
+              <div class="fert-row">
+                <span>🌿 Urea (Nitrogen)</span>
+                <span>50-100 kg</span>
+              </div>
+              <div class="fert-row">
+                <span>🌱 DAP (Phosphorus)</span>
+                <span>40-60 kg</span>
+              </div>
+              <div class="fert-row">
+                <span>🌾 MOP (Potassium)</span>
+                <span>20-40 kg</span>
+              </div>
+            </div>
+
+            <h3>⚠️ Tips</h3>
+            <ul>
+              <li>Check soil test before applying fertilizers</li>
+              <li>Use organic compost for better soil health</li>
+              <li>Split fertilizer application into 2-3 stages</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- ═══ SOIL PANEL ═══ -->
+        <div class="panel" id="panel-soil">
+          <div class="panel-header soil-panel-header">
+            <div>
+              <h2 class="panel-title">🧪 Soil Testing Quiz</h2>
+              <p class="panel-subtitle">Find your exact soil profile & best crops</p>
+            </div>
+            <button class="btn btn-outline" id="soil-quiz-reset-btn" style="display:none;">🔄 Retake Quiz</button>
+          </div>
+
+          <!-- Quiz Wizard Container -->
+          <div class="soil-quiz-container glass-card" id="soil-quiz-container">
+            <!-- Progress Bar -->
+             <div class="quiz-progress-wrap">
+               <div class="quiz-progress-text">Step <span id="quiz-step-current">1</span> of 4</div>
+               <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quiz-progress-fill"></div></div>
+             </div>
+
+             <!-- Questions -->
+             <h3 class="quiz-question-title" id="quiz-question-title">What is the color of your soil?</h3>
+             <div class="quiz-options-grid" id="quiz-options-grid">
+                <!-- Dynamically populated -->
+             </div>
+          </div>
+
+          <!-- Quiz Result Container -->
+          <div class="soil-result-container" id="soil-result-container" style="display:none;">
+            <div class="soil-hero-card glass-card" id="soil-hero-card">
+              <h3 class="soil-identity-title" id="soil-identity-title">-- Soil</h3>
+              <div class="soil-identity-stats">
+                <div class="ident-stat"><strong>pH:</strong> <span id="ident-ph">--</span></div>
+                <div class="ident-stat"><strong>Texture:</strong> <span id="ident-tex">--</span></div>
+                <div class="ident-stat"><strong>Water Ret.:</strong> <span id="ident-water">--</span></div>
+              </div>
+              <p class="soil-identity-desc" id="soil-identity-desc">--</p>
+            </div>
+
+            <h3 class="forecast-section-title">Recommended Crops for Your Soil</h3>
+            <div class="recommended-crops-grid" id="recommended-crops-grid">
+               <!-- Loop crop cards here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ MARKET PANEL ═══ -->
+        <div class="panel" id="panel-market">
+          <div class="panel-header market-panel-header">
+            <div>
+              <h2 class="panel-title">💰 Live Market Tracker</h2>
+              <p class="panel-subtitle">Real-time agricultural commodity prices (API)</p>
+            </div>
+            <div class="market-status-box">
+              <span class="live-pulse"></span>
+              <span id="market-last-updated">Updating...</span>
+            </div>
+          </div>
+
+          <!-- Market Controls -->
+          <div class="market-controls glass-card">
+            <input type="text" id="market-search-input" class="form-input" placeholder="Search crops (e.g., Rice, Cotton)..." />
+          </div>
+
+          <!-- Loader -->
+          <div class="market-loader-wrap" id="market-loader" style="display:flex">
+             <div class="weather-spinner"></div>
+             <p>Connecting to Live Market Feed...</p>
+          </div>
+
+          <!-- Error -->
+          <div class="market-error-wrap glass-card" id="market-error" style="display:none">
+             <div class="weather-error-icon">⚠️</div>
+             <p>Failed to connect to the market API.</p>
+             <button class="btn btn-primary" id="market-retry-btn">Retry Connection</button>
+          </div>
+
+          <!-- Table -->
+          <div class="glass-card market-table-card" id="market-display" style="display:none">
+            <table class="market-table" id="market-table">
+              <thead>
+                <tr>
+                  <th>Crop</th>
+                  <th>Current Price (₹/qtl)</th>
+                  <th>24h Change</th>
+                  <th>Trend</th>
+                </tr>
+              </thead>
+              <tbody id="market-table-body">
+                <!-- Filled by JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="glass-card market-chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">Price Trends (Last 6 Months)</h3>
+            </div>
+            <div class="market-chart-container">
+              <canvas id="market-chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ SCHEDULER PANEL ═══ -->
+        <div class="panel" id="panel-scheduler">
+          <div class="panel-header">
+            <h2 class="panel-title">📅 Smart Farming Scheduler</h2>
+            <p class="panel-subtitle">Auto-generate watering, fertilizer, and harvest schedules</p>
+          </div>
+
+          <div class="scheduler-grid">
+            <div class="glass-card calendar-card">
+              <div class="calendar-header">
+                <button class="calendar-nav-btn" id="cal-prev" aria-label="Previous month">◀</button>
+                <span class="calendar-month" id="cal-month-label">March 2026</span>
+                <button class="calendar-nav-btn" id="cal-next" aria-label="Next month">▶</button>
+              </div>
+              <div class="calendar-grid-wrapper" id="calendar-grid">
+                <!-- Filled by JS -->
+              </div>
+              <div id="day-detail" class="day-detail-panel" style="display:none">
+                <h4 id="day-detail-title">Tasks for March 28</h4>
+                <div id="day-detail-tasks"></div>
+              </div>
+            </div>
+
+            <div class="glass-card scheduler-form">
+              <h3>➕ Add Crop Schedule</h3>
+              <div class="form-group">
+                <label for="sched-crop">Crop Name</label>
+                <input class="form-input" type="text" id="sched-crop" placeholder="e.g. Rice">
+              </div>
+              <div class="form-group">
+                <label for="sched-date">Planting Date</label>
+                <input class="form-input" type="date" id="sched-date">
+              </div>
+              <button class="btn btn-primary mt-2" id="sched-add-btn" style="width:100%">Generate Schedule</button>
+
+              <div class="scheduler-added-tasks" id="sched-tasks-list">
+                <!-- Filled by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ PROFIT PANEL ═══ -->
+        <div class="panel" id="panel-profit">
+          <div class="panel-header">
+            <h2 class="panel-title">💸 Profit Estimator</h2>
+            <p class="panel-subtitle">Calculate your expected revenue and profit</p>
+          </div>
+
+          <div class="glass-card profit-form-card">
+            <div class="profit-form-grid" id="profit-form">
+              <div class="form-group">
+                <label for="profit-land">Land Area (Acres)</label>
+                <input class="form-input" type="number" id="profit-land" placeholder="e.g. 10" min="1">
+              </div>
+              <div class="form-group">
+                <label for="profit-crop">Crop Type</label>
+                <select class="form-select" id="profit-crop">
+                  <option value="">Select Crop</option>
+                  <option value="rice">Rice 🌾</option>
+                  <option value="wheat">Wheat 🌿</option>
+                  <option value="cotton">Cotton 🏵️</option>
+                  <option value="sugarcane">Sugarcane 🎋</option>
+                  <option value="soybean">Soybean 🫘</option>
+                  <option value="maize">Maize 🌽</option>
+                  <option value="potato">Potato 🥔</option>
+                  <option value="tomato">Tomato 🍅</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="profit-yield">Yield / Acre (Quintals)</label>
+                <input class="form-input" type="number" id="profit-yield" placeholder="e.g. 20" min="1">
+              </div>
+              <div class="form-group">
+                <label for="profit-cost">Cost / Acre (₹)</label>
+                <input class="form-input" type="number" id="profit-cost" placeholder="e.g. 15000" min="0">
+              </div>
+            </div>
+            <div style="text-align:center; margin-top:1rem;">
+              <button class="btn btn-primary btn-lg" id="profit-calc-btn">💰 Calculate Profit</button>
+            </div>
+          </div>
+
+          <div class="profit-results-grid" id="profit-results" style="display:none">
+            <div class="glass-card profit-result-card">
+              <div class="profit-result-icon">🌾</div>
+              <div class="profit-result-label">Total Yield</div>
+              <div class="profit-result-value neutral" id="result-yield">--</div>
+            </div>
+            <div class="glass-card profit-result-card">
+              <div class="profit-result-icon">💰</div>
+              <div class="profit-result-label">Revenue</div>
+              <div class="profit-result-value neutral" id="result-revenue">--</div>
+            </div>
+            <div class="glass-card profit-result-card">
+              <div class="profit-result-icon">📉</div>
+              <div class="profit-result-label">Total Cost</div>
+              <div class="profit-result-value neutral" id="result-cost">--</div>
+            </div>
+            <div class="glass-card profit-result-card">
+              <div class="profit-result-icon">🟢</div>
+              <div class="profit-result-label">Net Profit</div>
+              <div class="profit-result-value positive" id="result-profit">--</div>
+            </div>
+          </div>
+
+          <div class="profit-chart-section" id="profit-chart-section" style="display:none">
+            <div class="glass-card profit-chart-card">
+              <div class="chart-header">
+                <h3 class="chart-title">Revenue vs Cost Breakdown</h3>
+              </div>
+              <div class="profit-chart-container">
+                <canvas id="profit-chart"></canvas>
+              </div>
+            </div>
+
+            <div class="glass-card best-crop-card">
+              <h3>🏆 Best Crop Suggestions</h3>
+              <div id="best-crop-list">
+                <!-- Filled by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /dashboard-content -->
+    </main>
+  </div><!-- /dashboard-layout -->
+
+  <!-- Crop Detail Modal -->
+  <div class="crop-modal-overlay" id="crop-modal-overlay">
+    <div class="crop-modal-box glass-card">
+      <div class="crop-modal-header">
+        <div class="crop-modal-title-wrap">
+          <span class="crop-modal-icon" id="cmodal-icon">--</span>
+          <h3 class="crop-modal-title" id="cmodal-title">--</h3>
+        </div>
+        <button class="crop-modal-close" id="cmodal-close">✕</button>
+      </div>
+      <div class="crop-modal-body" id="cmodal-body">
+        <div class="cmodal-stat-grid">
+          <div class="cmodal-stat"><div class="cstat-lbl">Soil Needed</div><div class="cstat-val" id="cmodal-soil">--</div></div>
+          <div class="cmodal-stat"><div class="cstat-lbl">Ideal Temp</div><div class="cstat-val" id="cmodal-temp">--</div></div>
+          <div class="cmodal-stat"><div class="cstat-lbl">Water Need</div><div class="cstat-val" id="cmodal-water">--</div></div>
+          <div class="cmodal-stat"><div class="cstat-lbl">Duration</div><div class="cstat-val" id="cmodal-duration">--</div></div>
+          <div class="cmodal-stat"><div class="cstat-lbl">Fertilizer</div><div class="cstat-val" id="cmodal-fert">--</div></div>
+          <div class="cmodal-stat" id="cmodal-harvest-wrap"><div class="cstat-lbl">Harvest</div><div class="cstat-val" id="cmodal-harvest">--</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

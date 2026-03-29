@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgroEase Login</title>
+  <meta name="description" content="Farmer login for AgroEase dashboard.">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-wrap {
+      width: 100%;
+      max-width: 460px;
+      padding: 2rem;
+      border-radius: var(--radius-lg);
+      z-index: 2;
+    }
+
+    .login-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+      text-align: center;
+    }
+
+    .login-subtitle {
+      color: var(--text-light);
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .phone-input {
+      font-size: 1.1rem;
+      padding: 1rem 1rem;
+    }
+
+    .otp-section {
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .otp-note {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .login-footer {
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 480px) {
+      .login-wrap {
+        padding: 1.5rem;
+      }
+
+      .login-title {
+        font-size: 1.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-animated"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <main class="login-page">
+    <section class="glass-card login-wrap" aria-label="Login">
+      <h1 class="login-title">AgroEase Login</h1>
+      <p class="login-subtitle">Farmer Login</p>
+
+      <form class="login-form" id="login-form" novalidate>
+        <div class="form-group">
+          <label for="name-input">Farmer Name</label>
+          <input
+            id="name-input"
+            class="form-input phone-input"
+            type="text"
+            maxlength="60"
+            placeholder="Enter your full name"
+            autocomplete="name"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="phone-input">Mobile Number</label>
+          <input
+            id="phone-input"
+            class="form-input phone-input"
+            type="tel"
+            inputmode="numeric"
+            pattern="[0-9]{10}"
+            maxlength="10"
+            placeholder="10-digit mobile number"
+            autocomplete="tel"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="village-input">Village</label>
+          <input
+            id="village-input"
+            class="form-input phone-input"
+            type="text"
+            maxlength="80"
+            placeholder="Enter your village"
+            autocomplete="address-level3"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label>District</label>
+          <div id="district-dropdown-container"></div>
+          <div id="district-error" class="input-error-text" style="display:none;"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" id="login-btn">Login</button>
+      </form>
+
+      
+    </section>
+  </main>
+
+  <script src="js/ui.js"></script>
+  <script>
+    const nameInput = document.getElementById('name-input');
+    const phoneInput = document.getElementById('phone-input');
+    const villageInput = document.getElementById('village-input');
+    const loginForm = document.getElementById('login-form');
+    const loginBtn = document.getElementById('login-btn');
+
+    // Remove non-numeric chars
+    phoneInput.addEventListener('input', () => {
+      phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
+      clearError(phoneInput);
+    });
+    
+    nameInput.addEventListener('input', () => clearError(nameInput));
+    villageInput.addEventListener('input', () => clearError(villageInput));
+
+    const districts = [
+      "Alluri Sitharama Raju", "Anakapalli", "Anantapuram", "Annamayya", "Bapatla", 
+      "Chittoor", "Dr. B. R. Ambedkar Konaseema", "East Godavari", "Eluru", "Guntur", 
+      "Kakinada", "Krishna", "Kurnool", "Nandyal", "NTR", "Palnadu", "Parvathipuram Manyam", 
+      "Prakasam", "Sri Potti Sriramulu Nellore", "Sri Sathya Sai", "Srikakulam", 
+      "Tirupati", "Visakhapatnam", "Vizianagaram", "West Godavari", "YSR"
+    ];
+
+    const districtDropdown = UI.initDropdown('district-dropdown-container', districts, (val) => {
+      document.getElementById('district-error').style.display = 'none';
+      districtDropdown.setError(false);
+    });
+
+    function showError(input, message) {
+      input.classList.add('ui-error-border');
+      let errEl = input.nextElementSibling;
+      if (!errEl || !errEl.classList.contains('input-error-text')) {
+        errEl = document.createElement('div');
+        errEl.className = 'input-error-text';
+        input.parentNode.insertBefore(errEl, input.nextSibling);
+      }
+      errEl.innerHTML = `⚠️ ${message}`;
+      errEl.style.display = 'flex';
+    }
+
+    function clearError(input) {
+      input.classList.remove('ui-error-border');
+      let errEl = input.nextElementSibling;
+      if (errEl && errEl.classList.contains('input-error-text')) {
+        errEl.style.display = 'none';
+      }
+    }
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = nameInput.value.trim();
+      const phone = phoneInput.value.trim();
+      const village = villageInput.value.trim();
+      const district = districtDropdown.getValue();
+
+      let isValid = true;
+
+      if (!name || name.length < 2) {
+        showError(nameInput, 'Please enter a valid name');
+        isValid = false;
+      }
+
+      if (!/^[0-9]{10}$/.test(phone)) {
+        showError(phoneInput, 'Please enter exactly 10 digits');
+        isValid = false;
+      }
+
+      if (!village) {
+        showError(villageInput, 'Please enter your village');
+        isValid = false;
+      }
+
+      if (!district) {
+        districtDropdown.setError(true);
+        const err = document.getElementById('district-error');
+        err.innerHTML = '⚠️ Please select a district';
+        err.style.display = 'flex';
+        isValid = false;
+      }
+
+      if (!isValid) {
+        UI.toast('Please fix the errors in the form', 'error');
+        return;
+      }
+
+      localStorage.setItem('farmerName', name);
+      localStorage.setItem('farmerPhone', phone);
+      localStorage.setItem('farmerVillage', village);
+      localStorage.setItem('farmerDistrict', district);
+      localStorage.setItem('loginTime', Date.now());
+
+      UI.setButtonLoading(loginBtn, true, 'Authenticating...');
+      UI.toast('Login successful! Redirecting...', 'success');
+
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 1500);
+    });
+  </script>
+</body>
+</html>
