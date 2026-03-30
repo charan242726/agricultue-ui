@@ -8,6 +8,143 @@
   <link rel="stylesheet" href="css/styles.css">
 <link rel="icon" href="favicon.ico" type="image/x-icon">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    /* ============================================
+       DASHBOARD PREMIUM TRANSITIONS & ANIMATIONS
+    ============================================ */
+
+    /* 1. Page entry: entire layout fades + lifts in from below */
+    .dashboard-layout {
+      animation: dashboardEntry 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    }
+    @keyframes dashboardEntry {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 2. Panel crossfade transition when switching sections */
+    .panel {
+      display: none;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .panel.active {
+      display: block;
+      animation: panelReveal 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    @keyframes panelReveal {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 3. Staggered stat card pop-in */
+    .stat-card {
+      opacity: 0;
+      transform: translateY(24px) scale(0.96);
+      animation: statCardIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    .stat-card:nth-child(1) { animation-delay: 0.05s; }
+    .stat-card:nth-child(2) { animation-delay: 0.15s; }
+    .stat-card:nth-child(3) { animation-delay: 0.25s; }
+    .stat-card:nth-child(4) { animation-delay: 0.35s; }
+    @keyframes statCardIn {
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* 4. Glass cards slide in from left with stagger */
+    .glass-card {
+      opacity: 0;
+      transform: translateX(-12px);
+      animation: cardSlideIn 0.5s ease forwards;
+    }
+    .glass-card:nth-child(2) { animation-delay: 0.1s; }
+    .glass-card:nth-child(3) { animation-delay: 0.2s; }
+    .glass-card:nth-child(4) { animation-delay: 0.3s; }
+    @keyframes cardSlideIn {
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* 5. Sidebar link active swoosh indicator */
+    .sidebar-link {
+      position: relative;
+      transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease;
+    }
+    .sidebar-link::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 10%; bottom: 10%;
+      width: 3px;
+      border-radius: 0 3px 3px 0;
+      background: #10b981;
+      transform: scaleY(0);
+      transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .sidebar-link.active::before { transform: scaleY(1); }
+    .sidebar-link:hover { transform: translateX(4px); }
+
+    /* 6. Topbar title letter-slide on panel switch */
+    .topbar-title {
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .topbar-title.changing {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+
+    /* 7. Stat value counter animation (numbers tick up) */
+    .stat-value {
+      transition: color 0.3s ease;
+    }
+    .stat-value.counting { color: #10b981; }
+
+    /* 8. Panel header fade */
+    .panel-header {
+      animation: fadeUp 0.5s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 9. Score circle draw animation */
+    .score-circle-progress {
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s;
+    }
+
+    /* 10. Market table rows stagger in */
+    #market-table-body tr {
+      opacity: 0;
+      animation: rowFadeIn 0.35s ease forwards;
+    }
+    @keyframes rowFadeIn {
+      to { opacity: 1; }
+    }
+
+    /* 11. Forecast day cards bounce in */
+    .weather-forecast > * {
+      opacity: 0;
+      transform: scale(0.9);
+      animation: forecastBounce 0.4s ease forwards;
+    }
+    @keyframes forecastBounce {
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* 12. Login → Dashboard dramatic page transition overlay */
+    .page-transition-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #10b981, #0ea5e9);
+      z-index: 9999;
+      animation: overlayWipe 0.8s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+      transform-origin: left center;
+    }
+    @keyframes overlayWipe {
+      from { transform: scaleX(1); }
+      to   { transform: scaleX(0); transform-origin: right center; }
+    }
+  </style>
 </head>
 <body>
 
@@ -635,5 +772,72 @@
 
   <script src="js/ui.js"></script>
   <script src="js/app.js"></script>
+
+  <script>
+    /* ============================================
+       DASHBOARD TRANSITION WIRING (runs after app.js)
+    ============================================ */
+
+    // 1. Login → Dashboard green wipe overlay
+    (function() {
+      const overlay = document.createElement('div');
+      overlay.className = 'page-transition-overlay';
+      document.body.prepend(overlay);
+      overlay.addEventListener('animationend', () => overlay.remove());
+    })();
+
+    // 2. Intercept sidebar navigation to animate the topbar title
+    const topbarTitle = document.getElementById('topbar-title');
+    document.querySelectorAll('.sidebar-link[data-panel]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const label = btn.textContent.trim();
+        topbarTitle.classList.add('changing');
+        setTimeout(() => {
+          topbarTitle.textContent = label;
+          topbarTitle.classList.remove('changing');
+        }, 250);
+      });
+    });
+
+    // 3. Stagger weather forecast cards when they appear
+    const forecastObserver = new MutationObserver(() => {
+      document.querySelectorAll('.weather-forecast > *').forEach((el, i) => {
+        el.style.animationDelay = `${i * 0.07}s`;
+      });
+    });
+    const forecastEl = document.getElementById('weather-forecast');
+    if (forecastEl) forecastObserver.observe(forecastEl, { childList: true });
+
+    // 4. Stagger market table rows when they appear
+    const marketObserver = new MutationObserver(() => {
+      document.querySelectorAll('#market-table-body tr').forEach((tr, i) => {
+        tr.style.animationDelay = `${i * 0.04}s`;
+      });
+    });
+    const marketBody = document.getElementById('market-table-body');
+    if (marketBody) marketObserver.observe(marketBody, { childList: true });
+
+    // 5. Animate stat values counting up when dashboard first loads
+    function animateCount(el, target, suffix, duration = 800) {
+      const isFloat = target % 1 !== 0;
+      let start = 0;
+      const step = (timestamp) => {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const current = isFloat ? (ease * target).toFixed(1) : Math.floor(ease * target);
+        el.textContent = current + suffix;
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+
+    // Trigger count-up on page load for the 4 stat cards
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        animateCount(document.getElementById('stat-crops'), 12, '', 900);
+      }, 400);
+    });
+  </script>
 </body>
 </html>
