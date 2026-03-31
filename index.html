@@ -5,11 +5,845 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AgroEase – Smart Farming with Data-Driven Insights</title>
-  <meta name="description"
-    content="Empowering farmers with technology and simplicity. AgroEase provides smart farming tools, crop recommendations, weather insights, and profit estimation.">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta name="description" content="Empowering farmers with technology and simplicity. AgroEase provides smart farming tools, crop recommendations, weather insights, and profit estimation.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    /* =====================================================
+       INDEX.HTML — Premium Overhaul
+    ===================================================== */
+    :root {
+      --font: 'Outfit', 'Inter', sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: #f8fafc;
+      overflow-x: hidden;
+    }
+
+    /* ── Dynamic Hero Background ── */
+    .hero {
+      min-height: 100vh;
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 7rem 2rem 5rem;
+      background: #0a1628;
+    }
+
+    /* Layer 1: Deep base */
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 75% 50%, rgba(16,185,129,0.22) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 20% 80%, rgba(14,165,233,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 10%, rgba(251,191,36,0.08) 0%, transparent 60%),
+        linear-gradient(160deg, #0a1628 0%, #0d2137 40%, #091a1a 100%);
+      z-index: 1;
+    }
+
+    /* Layer 2: Animated field lines */
+    .hero-field-lines {
+      position: absolute; inset: 0; z-index: 2;
+      overflow: hidden;
+    }
+    .hero-field-lines::before {
+      content: '';
+      position: absolute;
+      width: 200%; height: 200%;
+      top: -50%; left: -50%;
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent 0px,
+        transparent 38px,
+        rgba(16, 185, 129, 0.025) 38px,
+        rgba(16, 185, 129, 0.025) 40px
+      );
+      animation: fieldLinesDrift 20s linear infinite;
+    }
+    @keyframes fieldLinesDrift {
+      to { transform: translate(80px, 80px); }
+    }
+
+    /* Layer 3: Glowing orbs */
+    .hero-orb {
+      position: absolute; border-radius: 50%;
+      pointer-events: none; z-index: 2;
+      filter: blur(60px);
+    }
+    .hero-orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(16,185,129,0.25), transparent 70%);
+      right: -100px; top: -100px;
+      animation: orbPulse 8s ease-in-out infinite;
+    }
+    .hero-orb-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(14,165,233,0.2), transparent 70%);
+      left: -80px; bottom: 0;
+      animation: orbPulse 11s ease-in-out infinite 2s;
+    }
+    .hero-orb-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(251,191,36,0.12), transparent 70%);
+      left: 40%; top: 20%;
+      animation: orbPulse 14s ease-in-out infinite 4s;
+    }
+    @keyframes orbPulse {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 1; }
+    }
+
+    /* Layer 4: Sparkling star dots */
+    .hero-stars {
+      position: absolute; inset: 0; z-index: 2; pointer-events: none;
+    }
+    .star-dot {
+      position: absolute; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.7);
+      animation: starTwinkle ease-in-out infinite;
+    }
+    @keyframes starTwinkle {
+      0%, 100% { opacity: 0.1; transform: scale(0.8); }
+      50%       { opacity: 0.9; transform: scale(1.2); }
+    }
+
+    /* Hero content */
+    .hero-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+      width: 100%;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 50px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #4ade80;
+      margin-bottom: 1.75rem;
+      letter-spacing: 0.5px;
+      backdrop-filter: blur(8px);
+      animation: badgeBounce 3s ease-in-out infinite;
+    }
+    @keyframes badgeBounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-3px) scale(1.02); }
+    }
+    .badge-dot {
+      width: 7px; height: 7px;
+      background: #4ade80;
+      border-radius: 50%;
+      animation: badgeDotPulse 1.5s ease-in-out infinite;
+    }
+    @keyframes badgeDotPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    .hero-title {
+      font-size: clamp(2.8rem, 5vw, 4.2rem);
+      font-weight: 900;
+      line-height: 1.08;
+      margin-bottom: 1.5rem;
+      color: #ffffff;
+      letter-spacing: -1.5px;
+    }
+
+    .hero-title .accent-line {
+      display: block;
+      background: linear-gradient(90deg, #4ade80 0%, #22c55e 30%, #0ea5e9 65%, #38bdf8 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: textShine 5s linear infinite;
+    }
+    @keyframes textShine { to { background-position: 200% center; } }
+
+    .hero-desc {
+      font-size: 1.15rem;
+      color: rgba(255,255,255,0.72);
+      margin-bottom: 2.5rem;
+      max-width: 520px;
+      line-height: 1.75;
+      font-weight: 400;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+
+    .btn-hero-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.95rem 2.2rem;
+      background: linear-gradient(135deg, #16a34a 0%, #22c55e 50%, #0ea5e9 100%);
+      background-size: 200% auto;
+      color: #fff;
+      font-family: var(--font);
+      font-weight: 700;
+      font-size: 1rem;
+      border-radius: 14px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 25px rgba(16,185,129,0.4), 0 0 0 0 rgba(16,185,129,0.3);
+      transition: background-position 0.4s ease, transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-hero-primary::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.5s ease;
+    }
+    .btn-hero-primary:hover::before { transform: translateX(100%); }
+    .btn-hero-primary:hover {
+      background-position: right center;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 35px rgba(16,185,129,0.5);
+    }
+
+    .btn-hero-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.93rem 2rem;
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.9);
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 1rem;
+      border-radius: 14px;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.15);
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+    }
+    .btn-hero-outline:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.3);
+      transform: translateY(-3px);
+    }
+
+    /* Hero Stats */
+    .hero-stats {
+      display: flex;
+      gap: 0;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,0.04);
+      width: fit-content;
+    }
+    .hero-stat-item {
+      padding: 1rem 1.75rem;
+      text-align: center;
+      border-right: 1px solid rgba(255,255,255,0.1);
+    }
+    .hero-stat-item:last-child { border-right: none; }
+    .hero-stat-num {
+      font-size: 1.65rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #4ade80, #0ea5e9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+    .hero-stat-lbl {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.55);
+      margin-top: 0.3rem;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Hero Visual Side ── */
+    .hero-visual {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-dashboard-mock {
+      width: 100%;
+      max-width: 520px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 24px;
+      padding: 1.5rem;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05);
+      animation: dashboardFloat 8s ease-in-out infinite;
+    }
+    @keyframes dashboardFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-18px) rotate(0.5deg); }
+    }
+
+    .mock-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .mock-logo {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #4ade80;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .mock-dots { display: flex; gap: 0.4rem; }
+    .mock-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .mock-dot-r { background: #ff5f57; }
+    .mock-dot-y { background: #ffbd2e; }
+    .mock-dot-g { background: #28ca41; }
+
+    .mock-stat-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+    }
+    .mock-stat-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 1rem;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .mock-stat-card:hover {
+      transform: translateY(-3px);
+      background: rgba(255,255,255,0.10);
+    }
+    .mock-stat-icon { font-size: 1.5rem; margin-bottom: 0.4rem; }
+    .mock-stat-label { font-size: 0.72rem; color: rgba(255,255,255,0.5); margin-bottom: 0.15rem; }
+    .mock-stat-val {
+      font-size: 1.2rem; font-weight: 700; color: #fff;
+      animation: countFlicker 3s ease-in-out infinite;
+    }
+    @keyframes countFlicker {
+      0%, 80%, 100% { opacity: 1; }
+      85% { opacity: 0.4; }
+      90% { opacity: 1; }
+      95% { opacity: 0.4; }
+    }
+    .mock-stat-trend { font-size: 0.7rem; color: #4ade80; margin-top: 0.2rem; }
+
+    .mock-chart-area {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px;
+      padding: 1rem;
+      height: 80px;
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      overflow: hidden;
+    }
+    .mock-bar {
+      flex: 1;
+      background: linear-gradient(180deg, #22c55e, #16a34a);
+      border-radius: 4px 4px 0 0;
+      opacity: 0.8;
+      transform-origin: bottom;
+      animation: barGrow 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    @keyframes barGrow {
+      from { transform: scaleY(0); }
+      to   { transform: scaleY(1); }
+    }
+    .mock-bar:nth-child(even) {
+      background: linear-gradient(180deg, #0ea5e9, #0284c7);
+    }
+
+    /* Floating mini cards on the visual */
+    .hero-float-card {
+      position: absolute;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 14px;
+      padding: 0.75rem 1rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      font-size: 0.8rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      animation: floatCard 6s ease-in-out infinite;
+    }
+    .hero-float-card:nth-child(2) { animation-delay: -2s; }
+    .hero-float-card:nth-child(3) { animation-delay: -4s; }
+    @keyframes floatCard {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .hfc-left  { left: -90px; top: 20%; }
+    .hfc-right { right: -80px; bottom: 25%; }
+    .hfc-top   { top: -40px; right: 20%; }
+    .hfc-icon  { font-size: 1.3rem; }
+    .hfc-val   { font-weight: 700; font-size: 0.95rem; color: #4ade80; }
+
+    /* ── Wave Separator ── */
+    .wave-separator {
+      position: relative;
+      margin-top: -2px;
+      line-height: 0;
+    }
+    .wave-separator svg { display: block; width: 100%; }
+
+    /* ── Features Section Enhancement ── */
+    .features-section {
+      padding: 7rem 2rem;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    .features-header {
+      text-align: center;
+      margin-bottom: 5rem;
+    }
+    .section-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #16a34a;
+      background: rgba(16,163,74,0.08);
+      border: 1px solid rgba(16,163,74,0.15);
+      padding: 0.35rem 1rem;
+      border-radius: 50px;
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-size: clamp(2rem, 3.5vw, 2.8rem);
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      padding: 2.25rem;
+      text-align: left;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+      cursor: default;
+      transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  box-shadow 0.35s ease,
+                  border-color 0.35s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #16a34a, #0ea5e9);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .feature-card:hover::before { transform: scaleX(1); }
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.10);
+      border-color: rgba(16,163,74,0.15);
+    }
+
+    .feature-icon-wrap {
+      width: 56px; height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.65rem;
+      border-radius: 16px;
+      margin-bottom: 1.25rem;
+      background: linear-gradient(135deg, rgba(22,163,74,0.1), rgba(14,165,233,0.1));
+      border: 1px solid rgba(22,163,74,0.12);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .feature-card:hover .feature-icon-wrap {
+      transform: rotate(-10deg) scale(1.15);
+    }
+    .feature-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      color: #111827;
+    }
+    .feature-desc {
+      font-size: 0.9rem;
+      color: #6b7280;
+      line-height: 1.65;
+    }
+    .feature-arrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #16a34a;
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .feature-card:hover .feature-arrow {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* ── How It Works — Redesigned Timeline ── */
+    .how-section {
+      padding: 7rem 2rem;
+      background: linear-gradient(180deg, #f0fdf4 0%, #ecfdf5 50%, #f0f9ff 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .how-section::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 50%, rgba(16,185,129,0.05), transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(14,165,233,0.05), transparent 50%);
+    }
+    .how-inner { max-width: 1280px; margin: 0 auto; position: relative; z-index: 1; }
+    .how-header { text-align: center; margin-bottom: 5rem; }
+    .how-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      position: relative;
+    }
+    /* Connector line */
+    .how-steps::before {
+      content: '';
+      position: absolute;
+      top: 48px;
+      left: calc(12.5% + 24px);
+      width: calc(75% - 48px);
+      height: 2px;
+      background: linear-gradient(90deg, #16a34a, #0ea5e9);
+      z-index: 0;
+    }
+
+    .how-step {
+      text-align: center;
+      padding: 0 1.5rem 2rem;
+      position: relative;
+      z-index: 1;
+      background: none !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    .how-step:hover { transform: none !important; }
+
+    .how-step-icon {
+      width: 80px; height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      border-radius: 50%;
+      background: #fff;
+      border: 3px solid #16a34a;
+      box-shadow: 0 8px 24px rgba(16,163,74,0.2);
+      font-size: 1.8rem;
+      position: relative;
+      z-index: 1;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+    }
+    .how-step:hover .how-step-icon {
+      transform: scale(1.15) translateY(-4px);
+      box-shadow: 0 16px 32px rgba(16,163,74,0.3);
+    }
+    .how-step-num-badge {
+      position: absolute;
+      top: -4px; right: -4px;
+      width: 22px; height: 22px;
+      background: linear-gradient(135deg, #16a34a, #0ea5e9);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .how-step-title {
+      font-weight: 800;
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+      color: #111827;
+    }
+    .how-step-desc {
+      font-size: 0.88rem;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    /* ── Testimonials / Social Proof ── */
+    .social-proof {
+      padding: 4rem 2rem;
+      max-width: 1280px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .proof-label {
+      font-size: 0.82rem; text-transform: uppercase; letter-spacing: 2px;
+      color: #9ca3af; font-weight: 600; margin-bottom: 1.5rem;
+    }
+    .proof-avatars {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 0.75rem;
+    }
+    .proof-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      margin-left: -10px;
+      background: linear-gradient(135deg, #16a34a, #0ea5e9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .proof-avatar:first-child { margin-left: 0; }
+    .proof-text { color: #6b7280; font-size: 0.9rem; }
+    .proof-text strong { color: #111827; }
+    .proof-stars { color: #fbbf24; letter-spacing: 2px; font-size: 1rem; }
+
+    /* ── CTA Enhanced ── */
+    .cta-section {
+      padding: 7rem 2rem;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    .cta-card {
+      background: linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #0a2010 100%);
+      border-radius: 28px;
+      padding: 5rem 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    .cta-card::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at 50% 50%, rgba(16,185,129,0.12), transparent 60%);
+      animation: ctaPulse 6s ease-in-out infinite;
+    }
+    @keyframes ctaPulse {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.15); opacity: 1; }
+    }
+    .cta-title {
+      font-size: clamp(2rem, 3.5vw, 2.8rem);
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+    .cta-title span {
+      background: linear-gradient(90deg, #4ade80, #0ea5e9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .cta-desc {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 2.5rem;
+      position: relative; z-index: 1;
+    }
+
+    /* ── Enhanced Navbar ── */
+    .landing-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 1.1rem 2rem;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .landing-nav.scrolled {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.06);
+      padding: 0.8rem 2rem;
+    }
+    .nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 1.45rem; font-weight: 800;
+      color: #fff; text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .landing-nav.scrolled .logo { color: #16a34a; }
+    .logo-icon { font-size: 1.6rem; }
+    .nav-links {
+      display: flex; align-items: center; gap: 2.25rem;
+      list-style: none;
+    }
+    .nav-links a:not(.btn) {
+      text-decoration: none;
+      color: rgba(255,255,255,0.85);
+      font-weight: 600; font-size: 0.92rem;
+      letter-spacing: 0.3px;
+      transition: color 0.3s ease;
+      position: relative;
+    }
+    .nav-links a:not(.btn)::after {
+      content: '';
+      position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 2px;
+      background: #22c55e;
+      transition: width 0.3s ease;
+    }
+    .nav-links a:not(.btn):hover { color: #4ade80; }
+    .nav-links a:not(.btn):hover::after { width: 100%; }
+    .landing-nav.scrolled .nav-links a:not(.btn) { color: #374151; }
+    .landing-nav.scrolled .nav-links a:not(.btn):hover { color: #16a34a; }
+
+    /* ── Enhanced Footer ── */
+    .landing-footer {
+      padding: 3rem 2rem;
+      background: #f8fafc;
+      border-top: 1px solid rgba(0,0,0,0.06);
+    }
+    .footer-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 1.1rem; font-weight: 800; color: #16a34a;
+    }
+    .footer-text { color: #9ca3af; font-size: 0.85rem; margin-top: 0.25rem; }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a {
+      color: #6b7280; text-decoration: none; font-size: 0.88rem;
+      transition: color 0.3s ease;
+    }
+    .footer-links a:hover { color: #16a34a; }
+
+    /* ── Loading Screen ── */
+    .loading-screen {
+      background: linear-gradient(135deg, #0a1628 0%, #0d2137 100%);
+    }
+    .loading-logo {
+      color: #4ade80;
+      font-family: var(--font);
+    }
+
+    /* ── Mobile ── */
+    .mobile-menu-btn {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer; padding: 5px;
+    }
+    .mobile-menu-btn span {
+      width: 25px; height: 2.5px;
+      background: #fff; border-radius: 3px;
+      transition: all 0.3s ease;
+    }
+    .landing-nav.scrolled .mobile-menu-btn span { background: #374151; }
+
+    @media (max-width: 1024px) {
+      .hero-content { grid-template-columns: 1fr; gap: 3rem; }
+      .hero-dashboard-mock { max-width: 450px; margin: 0 auto; }
+      .hfc-left, .hfc-right, .hfc-top { display: none; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .how-steps { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+      .how-steps::before { display: none; }
+    }
+    @media (max-width: 640px) {
+      .features-grid { grid-template-columns: 1fr; }
+      .how-steps { grid-template-columns: 1fr; }
+      .hero-stats { flex-direction: column; width: auto; }
+      .hero-stat-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+      .hero-stat-item:last-child { border-bottom: none; }
+      .cta-card { padding: 3rem 2rem; }
+      .footer-inner { flex-direction: column; text-align: center; }
+      .mobile-menu-btn { display: flex; }
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex; flex-direction: column;
+        position: absolute;
+        top: 100%; left: 0; right: 0;
+        background: rgba(255,255,255,0.97);
+        backdrop-filter: blur(20px);
+        padding: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        gap: 1rem;
+      }
+      .nav-links.open a:not(.btn) { color: #374151 !important; }
+    }
+  </style>
 </head>
 
 <body>
@@ -24,14 +858,18 @@
     </div>
   </div>
 
-  <!-- Animated Background -->
-  <div class="bg-animated"></div>
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-  <div class="blob blob-3"></div>
+  <!-- Background Layers -->
+  <div class="bg-morph-blob bg-morph-1"></div>
+  <div class="bg-morph-blob bg-morph-2"></div>
+  <div class="bg-morph-blob bg-morph-3"></div>
+  <div class="bg-grid-pattern"></div>
+  <div class="noise-overlay"></div>
+
+  <!-- Floating Crop Icons -->
+  <div class="floating-icons-container" id="floating-icons"></div>
 
   <!-- Navigation -->
-  <nav class="landing-nav navbar" id="landing-nav">
+  <nav class="landing-nav" id="landing-nav">
     <div class="nav-inner">
       <a href="#" class="logo">
         <span class="logo-icon">🌾</span> AgroEase
@@ -40,79 +878,123 @@
         <li><a href="#features">Features</a></li>
         <li><a href="#how-it-works">How It Works</a></li>
         <li><a href="#cta">Get Started</a></li>
-        <li><a href="login.html" class="btn btn-primary">Open Dashboard</a></li>
+        <li><a href="login.html" class="btn btn-primary" id="nav-dashboard-btn">Open Dashboard</a></li>
       </ul>
       <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </button>
     </div>
   </nav>
 
   <!-- Hero Section -->
   <section class="hero" id="hero">
+    <!-- Animated background layers -->
+    <div class="hero-field-lines"></div>
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+    <div class="hero-stars" id="hero-stars"></div>
+
     <div class="hero-content">
-      <div class="hero-text" data-aos="fade-right" data-aos-duration="1000">
+      <!-- Left: Text -->
+      <div class="hero-text reveal-left">
         <div class="hero-badge">
+          <span class="badge-dot"></span>
           🚀 Next-Gen Farming Platform
         </div>
         <h1 class="hero-title">
-          Smart Farming with <br><span class="gradient-text">Data-Driven Insights</span>
+          Smart Farming with
+          <span class="accent-line">Data-Driven Insights</span>
         </h1>
         <p class="hero-desc">
-          Empowering farmers with technology and simplicity. Monitor crops,
-          track weather, analyze soil health, and maximize your profits — all in one place.
+          Empowering farmers with technology and simplicity. Monitor crops, track weather,
+          analyze soil health, and maximize your profits — all in one powerful platform.
         </p>
-        <div class="hero-buttons">
-          <a href="login.html" class="btn btn-primary btn-lg" id="hero-cta">
+        <div class="hero-cta-group">
+          <a href="login.html" class="btn-hero-primary ripple-container" id="hero-cta">
             Open Dashboard →
           </a>
-          <a href="#features" class="btn btn-outline btn-lg" id="hero-learn">
-            Learn More
+          <a href="#features" class="btn-hero-outline" id="hero-learn">
+            Explore Features
           </a>
         </div>
         <div class="hero-stats">
-          <div class="hero-stat">
-            <div class="hero-stat-value">10K+</div>
-            <div class="hero-stat-label">Active Farmers</div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num" id="stat-farmers">10K+</div>
+            <div class="hero-stat-lbl">Active Farmers</div>
           </div>
-          <div class="hero-stat">
-            <div class="hero-stat-value">95%</div>
-            <div class="hero-stat-label">Accuracy</div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num">95%</div>
+            <div class="hero-stat-lbl">Accuracy Rate</div>
           </div>
-          <div class="hero-stat">
-            <div class="hero-stat-value">₹2Cr+</div>
-            <div class="hero-stat-label">Profit Generated</div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num">₹2Cr+</div>
+            <div class="hero-stat-lbl">Profit Generated</div>
           </div>
         </div>
       </div>
 
-      <div class="hero-visual" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
-        <div class="hero-visual-grid">
-          <div class="glass-card hero-card">
-            <div class="hero-card-icon">🌡️</div>
-            <div class="hero-card-title">Temperature</div>
-            <div class="hero-card-value">28°C</div>
-            <div class="hero-card-trend">☀️ Sunny</div>
+      <!-- Right: Dashboard Mockup -->
+      <div class="hero-visual reveal-right">
+        <!-- Floating Badge Cards -->
+        <div class="hero-float-card hfc-top">
+          <span class="hfc-icon">🌡️</span>
+          <span>Temp: <span class="hfc-val">28°C</span></span>
+        </div>
+        <div class="hero-float-card hfc-left">
+          <span class="hfc-icon">💹</span>
+          <span>Yield: <span class="hfc-val">+15%</span></span>
+        </div>
+        <div class="hero-float-card hfc-right">
+          <span class="hfc-icon">🧪</span>
+          <span>pH: <span class="hfc-val">6.8</span></span>
+        </div>
+
+        <!-- Dashboard Mockup Card -->
+        <div class="hero-dashboard-mock spotlight-card">
+          <div class="mock-topbar">
+            <div class="mock-logo"><span>🌾</span> AgroEase</div>
+            <div class="mock-dots">
+              <div class="mock-dot mock-dot-r"></div>
+              <div class="mock-dot mock-dot-y"></div>
+              <div class="mock-dot mock-dot-g"></div>
+            </div>
           </div>
-          <div class="glass-card hero-card">
-            <div class="hero-card-icon">🌾</div>
-            <div class="hero-card-title">Active Crops</div>
-            <div class="hero-card-value">12</div>
-            <div class="hero-card-trend">↑ 3 this season</div>
+          <div class="mock-stat-row">
+            <div class="mock-stat-card">
+              <div class="mock-stat-icon">🌾</div>
+              <div class="mock-stat-label">Active Crops</div>
+              <div class="mock-stat-val">12</div>
+              <div class="mock-stat-trend">↑ 3 this season</div>
+            </div>
+            <div class="mock-stat-card">
+              <div class="mock-stat-icon">📊</div>
+              <div class="mock-stat-label">Yield Prediction</div>
+              <div class="mock-stat-val">4.2T</div>
+              <div class="mock-stat-trend">↑ 15% vs last year</div>
+            </div>
+            <div class="mock-stat-card">
+              <div class="mock-stat-icon">💰</div>
+              <div class="mock-stat-label">Revenue</div>
+              <div class="mock-stat-val">₹8.5L</div>
+              <div class="mock-stat-trend">↑ 22% growth</div>
+            </div>
+            <div class="mock-stat-card">
+              <div class="mock-stat-icon">🌡️</div>
+              <div class="mock-stat-label">Temperature</div>
+              <div class="mock-stat-val">28°C</div>
+              <div class="mock-stat-trend">☀️ Sunny</div>
+            </div>
           </div>
-          <div class="glass-card hero-card">
-            <div class="hero-card-icon">📊</div>
-            <div class="hero-card-title">Yield Prediction</div>
-            <div class="hero-card-value">4.2T</div>
-            <div class="hero-card-trend">↑ 15% vs last year</div>
-          </div>
-          <div class="glass-card hero-card">
-            <div class="hero-card-icon">💰</div>
-            <div class="hero-card-title">Revenue Est.</div>
-            <div class="hero-card-value">₹8.5L</div>
-            <div class="hero-card-trend">↑ 22% growth</div>
+          <div class="mock-chart-area">
+            <div class="mock-bar" style="height:45%; animation-delay:0s"></div>
+            <div class="mock-bar" style="height:70%; animation-delay:0.1s"></div>
+            <div class="mock-bar" style="height:55%; animation-delay:0.2s"></div>
+            <div class="mock-bar" style="height:85%; animation-delay:0.3s"></div>
+            <div class="mock-bar" style="height:65%; animation-delay:0.4s"></div>
+            <div class="mock-bar" style="height:90%; animation-delay:0.5s"></div>
+            <div class="mock-bar" style="height:75%; animation-delay:0.6s"></div>
+            <div class="mock-bar" style="height:100%; animation-delay:0.7s"></div>
           </div>
         </div>
       </div>
@@ -121,50 +1003,69 @@
 
   <!-- Wave Separator -->
   <div class="wave-separator">
-    <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
-      <path fill="rgba(255,255,255,0.3)"
-        d="M0,48L48,42.7C96,37,192,27,288,32C384,37,480,59,576,58.7C672,59,768,37,864,26.7C960,16,1056,16,1152,26.7C1248,37,1344,59,1392,69.3L1440,80L1440,80L1392,80C1344,80,1248,80,1152,80C1056,80,960,80,864,80C768,80,672,80,576,80C480,80,384,80,288,80C192,80,96,80,48,80L0,80Z" />
+    <svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#f8fafc"
+        d="M0,60 C240,100 480,10 720,60 C960,110 1200,20 1440,60 L1440,100 L0,100 Z"/>
     </svg>
+  </div>
+
+  <!-- Social Proof -->
+  <div class="social-proof">
+    <p class="proof-label">Trusted by farmers across India</p>
+    <div class="proof-avatars">
+      <div class="proof-avatar">RS</div>
+      <div class="proof-avatar">MK</div>
+      <div class="proof-avatar">AP</div>
+      <div class="proof-avatar">VR</div>
+      <div class="proof-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">+</div>
+    </div>
+    <div class="proof-stars">★★★★★</div>
+    <p class="proof-text">Rated <strong>4.9/5</strong> by 10,000+ farmers across India</p>
   </div>
 
   <!-- Features Section -->
   <section class="features-section" id="features">
-    <div class="features-header" data-aos="fade-up">
+    <div class="features-header reveal">
+      <div class="section-eyebrow">✨ Platform Features</div>
       <h2 class="section-title">Everything You Need to <span class="highlight">Farm Smarter</span></h2>
       <p class="section-subtitle">Powerful tools designed for modern agriculture</p>
     </div>
-    <div class="features-grid">
-      <div class="glass-card feature-card" data-aos="fade-up" data-aos-delay="0">
-        <div class="feature-icon">🌦️</div>
+    <div class="features-grid stagger-children">
+      <div class="feature-card spotlight-card reveal">
+        <div class="feature-icon-wrap">🌦️</div>
         <h3 class="feature-title">Weather Intelligence</h3>
-        <p class="feature-desc">Real-time weather monitoring with rain predictions and smart alerts to plan your farming
-          activities.</p>
+        <p class="feature-desc">Real-time weather monitoring with rain predictions and smart alerts to plan your farming activities.</p>
+        <span class="feature-arrow">Learn more →</span>
       </div>
-      <div class="glass-card feature-card" data-aos="fade-up" data-aos-delay="100">
-        <div class="feature-icon">🌱</div>
+      <div class="feature-card spotlight-card reveal">
+        <div class="feature-icon-wrap">🌱</div>
         <h3 class="feature-title">Crop Recommendations</h3>
-        <p class="feature-desc">AI-powered crop suggestions based on your soil type, season, and water availability for
-          maximum yield.</p>
+        <p class="feature-desc">AI-powered crop suggestions based on your soil type, season, and water availability for maximum yield.</p>
+        <span class="feature-arrow">Learn more →</span>
       </div>
-      <div class="glass-card feature-card" data-aos="fade-up" data-aos-delay="200">
-        <div class="feature-icon">🧪</div>
+      <div class="feature-card spotlight-card reveal">
+        <div class="feature-icon-wrap">🧪</div>
         <h3 class="feature-title">Soil Health Analysis</h3>
-        <p class="feature-desc">Monitor pH, nitrogen, phosphorus, and potassium levels with visual indicators.</p>
+        <p class="feature-desc">Monitor pH, nitrogen, phosphorus, and potassium levels with interactive visual indicators.</p>
+        <span class="feature-arrow">Learn more →</span>
       </div>
-      <div class="glass-card feature-card" data-aos="fade-up" data-aos-delay="300">
-        <div class="feature-icon">💰</div>
+      <div class="feature-card spotlight-card reveal">
+        <div class="feature-icon-wrap">💰</div>
         <h3 class="feature-title">Market Tracker</h3>
-        <p class="feature-desc">Live crop prices and trend analysis to help you sell at the best possible time.</p>
+        <p class="feature-desc">Live crop prices and trend analysis to help you sell at the best possible time and maximize profits.</p>
+        <span class="feature-arrow">Learn more →</span>
       </div>
-      <div class="glass-card feature-card" data-aos="fade-up" data-aos-delay="400">
-        <div class="feature-icon">📅</div>
+      <div class="feature-card spotlight-card reveal">
+        <div class="feature-icon-wrap">📅</div>
         <h3 class="feature-title">Smart Scheduler</h3>
-        <p class="feature-desc">Auto-generate watering, fertilizer, and harvest schedules with calendar views.</p>
+        <p class="feature-desc">Auto-generate watering, fertilizer, and harvest schedules with interactive calendar views.</p>
+        <span class="feature-arrow">Learn more →</span>
       </div>
-      <div class="glass-card feature-card" data-aos="fade-up" data-aos-delay="500">
-        <div class="feature-icon">📈</div>
+      <div class="feature-card spotlight-card reveal">
+        <div class="feature-icon-wrap">📈</div>
         <h3 class="feature-title">Profit Estimator</h3>
-        <p class="feature-desc">Calculate expected revenue, costs, and profits with interactive charts and insights.</p>
+        <p class="feature-desc">Calculate expected revenue, costs, and profits with interactive charts and actionable insights.</p>
+        <span class="feature-arrow">Learn more →</span>
       </div>
     </div>
   </section>
@@ -172,30 +1073,43 @@
   <!-- How It Works -->
   <section class="how-section" id="how-it-works">
     <div class="how-inner">
-      <div class="how-header" data-aos="fade-up">
+      <div class="how-header reveal">
+        <div class="section-eyebrow">⚡ Simple Process</div>
         <h2 class="section-title">How <span class="highlight">AgroEase</span> Works</h2>
         <p class="section-subtitle">Get started in four simple steps</p>
       </div>
-      <div class="how-steps">
-        <div class="glass-card how-step" data-aos="zoom-in" data-aos-delay="0">
-          <div class="how-step-num">1</div>
+      <div class="how-steps stagger-children">
+        <div class="how-step glass-card reveal-scale">
+          <div class="how-step-icon">
+            <span>📝</span>
+            <div class="how-step-num-badge">1</div>
+          </div>
           <h3 class="how-step-title">Input Your Data</h3>
-          <p class="how-step-desc">Enter your land area, soil type, and available resources.</p>
+          <p class="how-step-desc">Enter your land area, soil type, and available resources to get started.</p>
         </div>
-        <div class="glass-card how-step" data-aos="zoom-in" data-aos-delay="150">
-          <div class="how-step-num">2</div>
+        <div class="how-step glass-card reveal-scale">
+          <div class="how-step-icon">
+            <span>🔍</span>
+            <div class="how-step-num-badge">2</div>
+          </div>
           <h3 class="how-step-title">Get Insights</h3>
-          <p class="how-step-desc">Receive crop recommendations, weather alerts, and soil analysis.</p>
+          <p class="how-step-desc">Receive crop recommendations, weather alerts, and soil analysis instantly.</p>
         </div>
-        <div class="glass-card how-step" data-aos="zoom-in" data-aos-delay="300">
-          <div class="how-step-num">3</div>
+        <div class="how-step glass-card reveal-scale">
+          <div class="how-step-icon">
+            <span>📅</span>
+            <div class="how-step-num-badge">3</div>
+          </div>
           <h3 class="how-step-title">Plan & Schedule</h3>
-          <p class="how-step-desc">Auto-generate farming schedules with smart task management.</p>
+          <p class="how-step-desc">Auto-generate farming schedules with smart task management and reminders.</p>
         </div>
-        <div class="glass-card how-step" data-aos="zoom-in" data-aos-delay="450">
-          <div class="how-step-num">4</div>
+        <div class="how-step glass-card reveal-scale">
+          <div class="how-step-icon">
+            <span>💎</span>
+            <div class="how-step-num-badge">4</div>
+          </div>
           <h3 class="how-step-title">Maximize Profit</h3>
-          <p class="how-step-desc">Track markets and estimate profits to grow your revenue.</p>
+          <p class="how-step-desc">Track markets and estimate profits to grow your revenue season after season.</p>
         </div>
       </div>
     </div>
@@ -203,10 +1117,10 @@
 
   <!-- CTA Section -->
   <section class="cta-section" id="cta">
-    <div class="glass-card cta-card" data-aos="fade-up">
-      <h2 class="cta-title">Ready to <span class="gradient-text">Transform Your Farm?</span></h2>
+    <div class="cta-card reveal-scale">
+      <h2 class="cta-title">Ready to <span>Transform Your Farm?</span></h2>
       <p class="cta-desc">Join thousands of farmers using AgroEase to grow smarter, not harder.</p>
-      <a href="login.html" class="btn btn-primary btn-lg" id="cta-dashboard-btn">
+      <a href="login.html" class="btn-hero-primary ripple-container" id="cta-dashboard-btn">
         🚀 Launch Dashboard
       </a>
     </div>
@@ -215,8 +1129,9 @@
   <!-- Footer -->
   <footer class="landing-footer">
     <div class="footer-inner">
-      <div class="footer-text">
-        © 2026 AgroEase. Crafted with 💚 for farmers worldwide.
+      <div>
+        <div class="footer-brand"><span>🌾</span> AgroEase</div>
+        <p class="footer-text">© 2026 AgroEase. Crafted with 💚 for farmers worldwide.</p>
       </div>
       <div class="footer-links">
         <a href="#">Privacy</a>
@@ -227,37 +1142,7 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-  <script src="js/script.js"></script>
-  <script>
-    // Loading screen
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        document.getElementById('loading-screen').classList.add('hidden');
-      }, 2000);
-    });
-
-    // AOS Init
-    AOS.init({
-      once: true,
-      easing: 'ease-out-cubic',
-      duration: 800,
-    });
-
-    // Mobile menu
-    const menuBtn = document.getElementById('mobile-menu-btn');
-    const navLinks = document.getElementById('nav-links');
-    menuBtn.addEventListener('click', () => {
-      navLinks.classList.toggle('open');
-    });
-
-    // Close menu on link click
-    navLinks.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        navLinks.classList.remove('open');
-      });
-    });
-  </script>
+  <script src="js/landing.js"></script>
 </body>
 
 </html>
