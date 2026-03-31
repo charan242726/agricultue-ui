@@ -1,0 +1,173 @@
+/* ============================================================
+   AgroEase – Landing Page Specific Styles
+   ============================================================ */
+
+/* ── 1. Hero Section ── */
+.hero {
+  min-height: 100vh;
+  background: var(--midnight);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rem 2rem 5rem;
+}
+
+.hero::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 1;
+  background: 
+    radial-gradient(ellipse 70% 60% at 75% 50%, rgba(22, 163, 74, 0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 70% at 20% 80%, rgba(14, 165, 233, 0.12) 0%, transparent 60%);
+}
+
+.hero-lines {
+  position: absolute; inset: 0; z-index: 2; overflow: hidden;
+  opacity: 0.3;
+}
+
+.hero-lines::before {
+  content: '';
+  position: absolute; width: 200%; height: 200%;
+  top: -50%; left: -50%;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0, transparent 48px,
+    rgba(255, 255, 255, 0.02) 48px, rgba(255, 255, 255, 0.02) 50px
+  );
+  animation: linesDrift 30s linear infinite;
+}
+
+@keyframes linesDrift { to { transform: translate(100px, 100px); } }
+
+.hero-content {
+  max-width: 1280px; width: 100%;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 4rem; align-items: center;
+  position: relative; z-index: 10;
+}
+
+.hero-title {
+  font-size: clamp(3rem, 5vw, 4.5rem);
+  color: #fff;
+  margin-bottom: 1.5rem;
+  line-height: 1.05;
+}
+
+.hero-desc {
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.65);
+  max-width: 540px;
+  margin-bottom: 2.5rem;
+}
+
+/* ── 2. Mock Dashboard Card ── */
+.mock-dashboard {
+  position: relative;
+  width: 100%;
+}
+
+.mock-card {
+  background: rgba(13, 33, 55, 0.75);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-lg), 0 0 40px rgba(0,0,0,0.3);
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+.mock-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.mock-stat {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mock-stat-val {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary-glow);
+  display: block;
+}
+
+.mock-stat-lbl {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+}
+
+/* ── 3. Features Section ── */
+.features-section {
+  padding: 10rem 2rem;
+  background: var(--bg-main);
+}
+
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+.feat-card {
+  padding: 2.5rem;
+  background: #fff;
+  border: 1.5px solid #f1f5f9;
+  border-radius: var(--radius-md);
+  transition: var(--transition-bounce);
+  cursor: pointer;
+}
+
+.feat-card:hover {
+  transform: translateY(-10px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.feat-icon-box {
+  width: 60px; height: 60px;
+  background: rgba(22, 163, 74, 0.08);
+  color: var(--primary);
+  font-size: 1.75rem;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+/* ── 4. Floating Elements ── */
+.chip {
+  position: absolute;
+  padding: 0.75rem 1.25rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border-radius: 50px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex; align-items: center; gap: 0.5rem;
+  z-index: 15;
+  animation: chipFloat 5s ease-in-out infinite;
+}
+
+@keyframes chipFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.chip-a { top: -20px; right: 20%; animation-delay: 0s; }
+.chip-b { bottom: 20%; left: -60px; animation-delay: 1.5s; }
+.chip-c { top: 30%; right: -60px; animation-delay: 3s; }
