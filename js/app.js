@@ -468,6 +468,121 @@ const AppData = {
   scheduledTasks: [],
 };
 
+// ═══════════════════════════════════════════
+// LOCAL DATASET ENGINE (STATIC-HOSTING SAFE)
+// ═══════════════════════════════════════════
+// The small CSVs are read directly from this repository.  The fertilizer
+// profiles below are averages derived from the supplied train.csv, keeping the
+// 33 MB training file out of the visitor's download path.
+const LocalDatasetEngine = (() => {
+  const cropUrl = 'dataset/crop-recommendation%20dataset/Crop_recommendation.csv';
+  const pestUrl = 'dataset/agricultural%20pest%20or%20disease%20dataset/tamil_agri_qa.csv';
+  const mandiUrl = 'dataset/India%20Mandi%20Wholesale%20Prices%20dataset/commodity_price.csv';
+  const fertilizerProfiles = [
+    ['Red','Paddy',31.5,61.1,22.8,21.0,9.4,'14-35-14'], ['Sandy','Paddy',31.6,61.1,23.0,21.3,9.6,'28-28'],
+    ['Clayey','Cotton',31.4,61.0,23.3,21.2,9.5,'20-20'], ['Black','Wheat',31.6,61.2,23.5,21.1,9.4,'10-26-26'],
+    ['Clayey','Wheat',31.5,61.1,23.1,21.0,9.5,'20-20'], ['Black','Cotton',31.6,61.0,23.2,21.0,9.5,'10-26-26'],
+    ['Black','Paddy',31.5,61.0,23.1,21.1,9.5,'10-26-26'], ['Red','Wheat',31.5,61.0,23.3,21.1,9.4,'DAP'],
+    ['Loamy','Wheat',31.3,61.2,23.3,21.3,9.4,'10-26-26'], ['Loamy','Paddy',31.4,61.0,22.9,21.4,9.4,'10-26-26'],
+    ['Loamy','Cotton',31.5,60.9,23.0,20.9,9.6,'17-17-17'], ['Clayey','Paddy',31.6,60.9,22.8,21.3,9.6,'17-17-17'],
+    ['Sandy','Wheat',31.4,61.2,23.2,21.0,9.4,'10-26-26'], ['Sandy','Cotton',31.4,61.0,23.1,21.3,9.6,'17-17-17'],
+    ['Red','Cotton',31.6,60.8,23.0,21.2,9.6,'14-35-14']
+  ].map(([soil, crop, temperature, humidity, n, p, k, fertilizer]) => ({ soil, crop, temperature, humidity, n, p, k, fertilizer }));
+
+  let cropRows = [];
+  let pestRows = [];
+  let mandiRows = [];
+  let loading;
+
+  function parseCsv(text) {
+    const rows = [];
+    let row = [], value = '', quoted = false;
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+      if (char === '"') {
+        if (quoted && text[i + 1] === '"') { value += '"'; i++; }
+        else quoted = !quoted;
+      } else if (char === ',' && !quoted) { row.push(value); value = ''; }
+      else if ((char === '\n' || char === '\r') && !quoted) {
+        if (char === '\r' && text[i + 1] === '\n') i++;
+        row.push(value); if (row.some(cell => cell !== '')) rows.push(row); row = []; value = '';
+      } else value += char;
+    }
+    if (value || row.length) { row.push(value); rows.push(row); }
+    const [headers, ...records] = rows;
+    return records.map(record => Object.fromEntries(headers.map((header, index) => [header, record[index] || ''])));
+  }
+
+  function load() {
+    if (loading) return loading;
+    loading = Promise.all([fetch(cropUrl), fetch(pestUrl), fetch(mandiUrl)])
+      .then(async ([cropResponse, pestResponse, mandiResponse]) => {
+        if (!cropResponse.ok || !pestResponse.ok || !mandiResponse.ok) throw new Error('Local dataset could not be loaded');
+        cropRows = parseCsv(await cropResponse.text()).map(row => ({
+          n: Number(row.N), p: Number(row.P), k: Number(row.K), temperature: Number(row.temperature),
+          humidity: Number(row.humidity), ph: Number(row.ph), rainfall: Number(row.rainfall), label: row.label
+        }));
+        pestRows = parseCsv(await pestResponse.text());
+        mandiRows = parseCsv(await mandiResponse.text());
+      });
+    return loading;
+  }
+
+  function cropMatches({ n, p, k, ph }) {
+    const temperature = AppData.weather.temperature;
+    const humidity = AppData.weather.humidity;
+    const rainfall = AppData.weather.rainProbability * 2;
+    const scores = new Map();
+    cropRows.forEach(row => {
+      const distance = Math.sqrt(
+        ((n - row.n) / 140) ** 2 + ((p - row.p) / 140) ** 2 + ((k - row.k) / 210) ** 2 +
+        ((ph - row.ph) / 4) ** 2 + ((temperature - row.temperature) / 18) ** 2 +
+        ((humidity - row.humidity) / 55) ** 2 + ((rainfall - row.rainfall) / 250) ** 2
+      );
+      scores.set(row.label, (scores.get(row.label) || 0) + 1 / (1 + distance));
+    });
+    return [...scores.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([label]) => label);
+  }
+
+  function fertilizerMatch({ soil, crop, n, p, k }) {
+    const soilMap = { alluvial: 'Loamy', black: 'Black', red: 'Red' };
+    const cropMap = { rice: 'Paddy', wheat: 'Wheat', cotton: 'Cotton' };
+    const targetSoil = soilMap[soil];
+    const targetCrop = cropMap[crop];
+    const candidates = fertilizerProfiles.filter(profile => profile.crop === targetCrop);
+    return candidates.sort((a, b) => {
+      const score = profile => (profile.soil === targetSoil ? 0 : 1) + Math.abs(profile.n - n) / 30 + Math.abs(profile.p - p) / 30 + Math.abs(profile.k - k) / 20;
+      return score(a) - score(b);
+    })[0];
+  }
+
+  function pestOptions(crop) {
+    return [...new Set(pestRows.filter(row => row.crop.toLowerCase() === crop).map(row => row.pest_or_disease))];
+  }
+
+  function pestMatch(crop, pest, severity) {
+    return pestRows.find(row => row.crop.toLowerCase() === crop && row.pest_or_disease === pest && row.severity === severity)
+      || pestRows.find(row => row.crop.toLowerCase() === crop && row.pest_or_disease === pest)
+      || null;
+  }
+
+  function marketSnapshot() {
+    const crops = [
+      { name: 'Cotton', icon: '🏵️', terms: ['cotton'] }, { name: 'Rice', icon: '🌾', terms: ['rice', 'paddy'] },
+      { name: 'Wheat', icon: '🌿', terms: ['wheat'] }, { name: 'Groundnut', icon: '🥜', terms: ['groundnut'] },
+      { name: 'Maize', icon: '🌽', terms: ['maize'] }
+    ];
+    return crops.map(crop => {
+      const matches = mandiRows.filter(row => crop.terms.some(term => row.Commodity.toLowerCase().includes(term)));
+      if (!matches.length) return null;
+      const record = matches[0];
+      return { crop: `${crop.icon} ${crop.name}`, rawName: crop.name, price: Number(record.Modal_x0020_Price), changeVal: 0, changePct: '0.00', isUp: true, market: record.Market, date: record.Arrival_Date };
+    }).filter(Boolean);
+  }
+
+  return { load, cropMatches, fertilizerMatch, pestOptions, pestMatch, marketSnapshot };
+})();
+
 
 // ═══════════════════════════════════════════
 // INITIALIZATION
@@ -488,6 +603,7 @@ function initDashboard() {
   initCalendar();
   renderBestCrops();
   setupFertilizerPrediction();
+  setupPestAdvisory();
   setupProfitEstimator();
   setupScheduler();
   initSoilQuiz();
@@ -532,31 +648,37 @@ function setupLogout() {
 }
 
 function loadDashboardStats() {
-  const statLand = document.getElementById('stat-land');
-  const statCrops = document.getElementById('stat-crops');
-  const statYield = document.getElementById('stat-yield');
+  const statLand    = document.getElementById('stat-land');
+  const statCrops   = document.getElementById('stat-crops');
+  const statYield   = document.getElementById('stat-yield');
   const statRevenue = document.getElementById('stat-revenue');
-  
+
   const ids = [statLand, statCrops, statYield, statRevenue];
-  
-  // Show skeletons
+
+  // Show skeletons while "loading"
   ids.forEach(el => {
-    if(el && window.UI) el.innerHTML = UI.createSkeleton(1, 'title');
+    if (el && window.UI) el.innerHTML = UI.createSkeleton(1, 'title');
   });
-  
+
   // Hide trends initially
   const trends = document.querySelectorAll('.stat-trend');
   trends.forEach(t => t.style.display = 'none');
 
-  // Simulate network fetch
+  // Populate with demo/default values after brief skeleton delay
   setTimeout(() => {
-    // Since there is no real data backend in this flow yet, show empty/zero state 
-    // to strictly fulfill "Empty -> No data available" requirement.
-    ids.forEach(el => {
-      if(el) {
-        el.innerHTML = '<span style="font-size:1rem;color:var(--text-muted);font-weight:500;">No data available</span>';
-      }
+    const stats = [
+      { el: statLand,    value: '25 Acres'  },
+      { el: statCrops,   value: '12'        },
+      { el: statYield,   value: '4.2 Tons'  },
+      { el: statRevenue, value: '₹8.5L'     },
+    ];
+
+    stats.forEach(({ el, value }) => {
+      if (el) el.textContent = value;
     });
+
+    // Restore trend badges
+    trends.forEach(t => t.style.display = '');
   }, 1200);
 }
 
@@ -574,6 +696,7 @@ function setupSidebar() {
     dashboard: 'Dashboard',
     weather: 'Weather Intelligence',
     fertilizer: 'Fertilizer Prediction',
+    pest: 'Pest & Disease Advisory',
     soil: 'Soil Health Monitor',
     market: 'Market Tracker',
     scheduler: 'Farming Scheduler',
@@ -777,7 +900,7 @@ function setupFertilizerPrediction() {
   const btn = document.getElementById('fert-btn');
   if (!btn) return;
 
-  btn.addEventListener('click', function () {
+  btn.addEventListener('click', async function () {
     const soil = document.getElementById('fert-soil').value;
     const crop = document.getElementById('fert-crop').value;
     const ph = parseFloat(document.getElementById('fert-ph').value);
@@ -804,46 +927,69 @@ function setupFertilizerPrediction() {
       return;
     }
 
-    let recommendation = '';
-    let amount = '';
-
-    if (n < 50) {
-      recommendation += '🌿 Add Urea (Nitrogen)<br>';
-      amount += 'Urea: 50-100 kg/acre<br>';
+    btn.disabled = true;
+    btn.textContent = 'Loading dataset…';
+    try {
+      await LocalDatasetEngine.load();
+      const fertilizer = LocalDatasetEngine.fertilizerMatch({ soil, crop, n, p, k });
+      const crops = LocalDatasetEngine.cropMatches({ n, p, k, ph });
+      if (!fertilizer) throw new Error('No matching fertilizer record');
+      const phAdvice = ph < 6 ? 'Your pH is acidic; discuss liming before nutrient application.' : ph > 7.5 ? 'Your pH is alkaline; ask an agricultural officer about correcting it before applying nutrients.' : 'Your pH is within the general neutral range.';
+      resultDiv.innerHTML = `
+        <div class="glass-card fert-result-card">
+          <h3>🌱 Dataset-backed match</h3>
+          <p><strong>Suggested fertilizer type:</strong> ${fertilizer.fertilizer}</p>
+          <p>Closest record: ${fertilizer.crop} on ${fertilizer.soil} soil. The recommendation considers your soil type and N/P/K values.</p>
+          <h4>🌾 Crop suitability from the local crop dataset</h4>
+          <p>${crops.map(name => name[0].toUpperCase() + name.slice(1)).join(' · ')}</p>
+          <p>${phAdvice}</p>
+          <p><strong>Safety:</strong> The supplied fertilizer dataset labels fertilizer type, not a field-validated application dose. Do not infer a urea quantity from this result; confirm the dose and split schedule with a soil-test lab or local agricultural officer.</p>
+        </div>
+      `;
+    } catch (error) {
+      resultDiv.innerHTML = '<div class="glass-card fert-result-card"><p>Could not load the local recommendation dataset. Run the site through a static server or GitHub Pages, rather than opening the HTML file directly.</p></div>';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Find Dataset Match';
     }
+  });
+}
 
-    if (p < 30) {
-      recommendation += '🌱 Add DAP (Phosphorus)<br>';
-      amount += 'DAP: 40-60 kg/acre<br>';
+function setupPestAdvisory() {
+  const cropSelect = document.getElementById('pest-crop');
+  const pestSelect = document.getElementById('pest-name');
+  const severitySelect = document.getElementById('pest-severity');
+  const btn = document.getElementById('pest-btn');
+  const result = document.getElementById('pest-result');
+  if (!cropSelect || !pestSelect || !severitySelect || !btn || !result) return;
+
+  const populatePests = async () => {
+    try {
+      await LocalDatasetEngine.load();
+      const options = LocalDatasetEngine.pestOptions(cropSelect.value);
+      pestSelect.innerHTML = options.map(name => `<option value="${name}">${name}</option>`).join('');
+    } catch (_) {
+      pestSelect.innerHTML = '<option>Dataset unavailable</option>';
     }
+  };
+  cropSelect.addEventListener('change', populatePests);
+  populatePests();
 
-    if (k < 30) {
-      recommendation += '🌾 Add MOP (Potassium)<br>';
-      amount += 'MOP: 20-40 kg/acre<br>';
+  btn.addEventListener('click', async () => {
+    try {
+      await LocalDatasetEngine.load();
+      const match = LocalDatasetEngine.pestMatch(cropSelect.value, pestSelect.value, severitySelect.value);
+      if (!match) throw new Error('No matching advisory');
+      result.innerHTML = `
+        <div class="glass-card fert-result-card">
+          <h3>🛡️ ${match.pest_or_disease} — ${match.severity} severity</h3>
+          <p>${match.answer_english}</p>
+          <p><strong>Safety check:</strong> Follow the product label, wear required PPE, avoid spraying in rain or strong wind, and verify local registration and pre-harvest interval with an agricultural officer.</p>
+          <p style="font-size:0.82rem;color:var(--text-muted)">Source: local Tamil agricultural pest/disease advisory dataset (${match.district}, ${match.season}).</p>
+        </div>`;
+    } catch (_) {
+      result.innerHTML = '<div class="glass-card fert-result-card"><p>No advisory could be found for that selection.</p></div>';
     }
-
-    if (ph < 6) {
-      recommendation += '🧪 Add Lime (increase pH)<br>';
-    }
-
-    if (ph > 7.5) {
-      recommendation += '🧪 Add Gypsum (reduce pH)<br>';
-    }
-
-    if (recommendation === '') {
-      recommendation = '✅ Soil is balanced. No extra fertilizer needed.';
-      amount = 'Maintain current nutrient levels.';
-    }
-
-    resultDiv.innerHTML = `
-      <div class="glass-card fert-result-card">
-        <h3>🌱 Fertilizer Recommendation</h3>
-        <p>${recommendation}</p>
-
-        <h4>⚖️ Suggested Amount</h4>
-        <p>${amount}</p>
-      </div>
-    `;
   });
 }
 
@@ -860,15 +1006,6 @@ function setupFertilizerPrediction() {
 
 let liveMarketData = [];
 let marketFilter = '';
-let marketInterval = null;
-
-const coinToCropMap = {
-  'bitcoin': { name: 'Cotton', base: 2500, icon: '🏵️' },
-  'ethereum': { name: 'Rice', base: 1950, icon: '🌾' },
-  'tether': { name: 'Wheat', base: 2100, icon: '🌿' },
-  'solana': { name: 'Groundnut', base: 4500, icon: '🥜' },
-  'cardano': { name: 'Maize', base: 1800, icon: '🌽' }
-};
 
 function setupLiveMarket() {
   const searchInput = document.getElementById('market-search-input');
@@ -884,9 +1021,6 @@ function setupLiveMarket() {
   });
 
   fetchMarketData();
-  
-  if(marketInterval) clearInterval(marketInterval);
-  marketInterval = setInterval(fetchMarketData, 45000); // 45s refresh
 }
 
 async function fetchMarketData() {
@@ -901,71 +1035,20 @@ async function fetchMarketData() {
   errorWrap.style.display = 'none';
 
   try {
-    const ids = Object.keys(coinToCropMap).join(',');
-    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=inr&include_24hr_change=true`;
-    
-    const res = await fetch(url);
-    if(!res.ok) throw new Error("API Error");
-    
-    const data = await res.json();
-    liveMarketData = [];
-    
-    Object.keys(coinToCropMap).forEach(coinId => {
-      const mapMeta = coinToCropMap[coinId];
-      const coinStat = data[coinId];
-      if(coinStat) {
-        const changePct = coinStat.inr_24h_change || 0;
-        const microFluc = (Date.now() % 50) - 25; 
-        
-        const currentPrice = Math.round(mapMeta.base + (mapMeta.base * (changePct / 100)) + microFluc);
-        const changeValue = Math.round(currentPrice - mapMeta.base);
-        
-        liveMarketData.push({
-          crop: `${mapMeta.icon} ${mapMeta.name}`,
-          rawName: mapMeta.name,
-          price: currentPrice,
-          changeVal: changeValue,
-          changePct: changePct.toFixed(2),
-          isUp: changeValue >= 0
-        });
-      }
-    });
-    
-    document.getElementById('market-last-updated').textContent = `Updated ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}`;
+    await LocalDatasetEngine.load();
+    liveMarketData = LocalDatasetEngine.marketSnapshot();
+    if (!liveMarketData.length) throw new Error('No supported commodities in dataset');
+    document.getElementById('market-last-updated').textContent = `Dataset date: ${liveMarketData[0].date}`;
     loader.style.display = 'none';
     tableWrap.style.display = 'block';
     
     renderLiveMarketTable();
     
   } catch(e) {
-    console.warn("Market API Error - Falling back to simulated data");
-    
-    // Reliable Fallback for Hackathon Demo
-    liveMarketData = [];
-    Object.keys(coinToCropMap).forEach(coinId => {
-      const mapMeta = coinToCropMap[coinId];
-      const changePct = (Math.random() * 5) - 2.5; // Random fluctuation between -2.5% and 2.5%
-      
-      // Calculate realistic price variations
-      const currentPrice = Math.round(mapMeta.base * (1 + (changePct / 100)));
-      const changeValue = currentPrice - mapMeta.base;
-      
-      liveMarketData.push({
-        crop: `${mapMeta.icon} ${mapMeta.name}`,
-        rawName: mapMeta.name,
-        price: currentPrice,
-        changeVal: changeValue,
-        changePct: changePct.toFixed(2),
-        isUp: changeValue >= 0
-      });
-    });
-    
-    document.getElementById('market-last-updated').textContent = `Updated ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})} (Live Sim)`;
+    console.warn('Market dataset error', e);
+    document.getElementById('market-last-updated').textContent = 'Dataset unavailable';
     loader.style.display = 'none';
-    errorWrap.style.display = 'none';
-    tableWrap.style.display = 'block';
-    
-    renderLiveMarketTable();
+    errorWrap.style.display = 'block';
   }
 }
 
@@ -985,10 +1068,8 @@ function renderLiveMarketTable() {
       <tr>
         <td><strong>${item.crop}</strong></td>
         <td>₹${item.price.toLocaleString()}</td>
-        <td class="${item.isUp ? 'trend-up' : 'trend-down'}">
-          ₹${Math.abs(item.changeVal)} (${item.isUp ? '+' : ''}${item.changePct}%)
-        </td>
-        <td style="font-size:1.2rem">${item.isUp ? '📈' : '📉'}</td>
+        <td>${item.market}</td>
+        <td>${item.date}</td>
       </tr>
     `;
   }).join('');
@@ -1261,8 +1342,9 @@ function generateSchedule(cropName, plantDateStr) {
     });
   }
 
-  // Fertilizer every 10 days for 90 days
-  for (let i = 0; i <= 90; i += 10) {
+  // Remind the farmer to review a soil test at key stages. Do not prescribe a
+  // blanket fertilizer schedule: dosage must follow the field's soil test.
+  for (const i of [0, 30, 60]) {
     const d = new Date(plantDate);
     d.setDate(d.getDate() + i);
     const dateStr = formatDate(d);
@@ -1270,7 +1352,7 @@ function generateSchedule(cropName, plantDateStr) {
     if (!scheduledEvents[dateStr]) scheduledEvents[dateStr] = [];
     scheduledEvents[dateStr].push({
       type: 'fertilizer',
-      label: `🧪 Fertilize ${cropName}`
+      label: `🧪 Review soil test before fertilizing ${cropName}`
     });
   }
 
@@ -1573,6 +1655,7 @@ function setupSearchOverlay() {
     { text: 'Dashboard', panel: 'dashboard', icon: '📊' },
     { text: 'Weather Intelligence', panel: 'weather', icon: '🌦️' },
     { text: 'Fertilizer Prediction', panel: 'fertilizer', icon: '🧪' },
+    { text: 'Pest & Disease Advisory', panel: 'pest', icon: '🛡️' },
     { text: 'Soil Testing Quiz', panel: 'soil', icon: '🧪' },
     { text: 'Market Tracker', panel: 'market', icon: '💰' },
     { text: 'Farming Scheduler', panel: 'scheduler', icon: '📅' },

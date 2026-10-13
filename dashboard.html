@@ -6,7 +6,7 @@
   <title>AgroEase Dashboard – Smart Farming Control Center</title>
   <meta name="description" content="AgroEase Dashboard: Monitor weather, manage crops, analyze soil, track markets, schedule tasks, and estimate profits for your farm.">
   <link rel="stylesheet" href="css/styles.css">
-<link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <style>
     /* ============================================
@@ -181,6 +181,7 @@
         <button class="search-quick-btn" data-panel="dashboard">📊 Dashboard</button>
         <button class="search-quick-btn" data-panel="weather">🌦️ Weather</button>
         <button class="search-quick-btn" data-panel="fertilizer">🧪 Fertilizer</button>
+        <button class="search-quick-btn" data-panel="pest">🛡️ Pest Advisory</button>
         <button class="search-quick-btn" data-panel="soil">🌍 Soil</button>
         <button class="search-quick-btn" data-panel="market">💰 Market</button>
         <button class="search-quick-btn" data-panel="scheduler">📅 Scheduler</button>
@@ -217,6 +218,9 @@
         </button>
         <button class="sidebar-link" data-panel="fertilizer" id="nav-fertilizer">
           <span class="link-icon">🧪</span> Fertilizer
+        </button>
+        <button class="sidebar-link" data-panel="pest" id="nav-pest">
+          <span class="link-icon">🛡️</span> Pest Advisory
         </button>
         <button class="sidebar-link" data-panel="scheduler" id="nav-scheduler">
           <span class="link-icon">📅</span> Scheduler
@@ -432,7 +436,7 @@
 
           <div class="panel-header">
             <h2 class="panel-title">🧪 Fertilizer Prediction</h2>
-            <p class="panel-subtitle">Get fertilizer suggestions + usage guidance</p>
+            <p class="panel-subtitle">Dataset-backed fertilizer selection — no blanket urea dose</p>
           </div>
 
           <div class="glass-card fertilizer-form">
@@ -462,21 +466,21 @@
             </div>
 
             <div class="form-group">
-              <label>Nitrogen (N)</label>
+              <label>Nitrogen (N) — soil-test value</label>
               <input type="number" id="fert-n" class="form-input">
             </div>
 
             <div class="form-group">
-              <label>Phosphorus (P)</label>
+              <label>Phosphorus (P) — soil-test value</label>
               <input type="number" id="fert-p" class="form-input">
             </div>
 
             <div class="form-group">
-              <label>Potassium (K)</label>
+              <label>Potassium (K) — soil-test value</label>
               <input type="number" id="fert-k" class="form-input">
             </div>
 
-            <button class="btn btn-primary" id="fert-btn">Predict Fertilizer</button>
+            <button class="btn btn-primary" id="fert-btn">Find Dataset Match</button>
           </div>
 
           <div id="fert-result" class="fert-result"></div>
@@ -490,30 +494,44 @@
               <li>Do not overuse - it can damage crops ❌</li>
             </ul>
 
-            <h3>⚖️ Recommended Quantities (per acre)</h3>
-
-            <div class="fert-table">
-              <div class="fert-row">
-                <span>🌿 Urea (Nitrogen)</span>
-                <span>50-100 kg</span>
-              </div>
-              <div class="fert-row">
-                <span>🌱 DAP (Phosphorus)</span>
-                <span>40-60 kg</span>
-              </div>
-              <div class="fert-row">
-                <span>🌾 MOP (Potassium)</span>
-                <span>20-40 kg</span>
-              </div>
-            </div>
-
             <h3>⚠️ Tips</h3>
             <ul>
               <li>Check soil test before applying fertilizers</li>
               <li>Use organic compost for better soil health</li>
               <li>Split fertilizer application into 2-3 stages</li>
+              <li>Confirm dose with a local agricultural officer: this dataset identifies fertilizer type, not a legal dose</li>
             </ul>
           </div>
+        </div>
+
+        <!-- ═══ PEST ADVISORY PANEL ═══ -->
+        <div class="panel" id="panel-pest">
+          <div class="panel-header">
+            <h2 class="panel-title">🛡️ Pest & Disease Advisory</h2>
+            <p class="panel-subtitle">Search local dataset guidance before spraying</p>
+          </div>
+          <div class="glass-card fertilizer-form">
+            <div class="form-group">
+              <label>Crop</label>
+              <select id="pest-crop" class="form-select">
+                <option value="rice">Rice / Paddy</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Pest or disease</label>
+              <select id="pest-name" class="form-select"></select>
+            </div>
+            <div class="form-group">
+              <label>Severity</label>
+              <select id="pest-severity" class="form-select">
+                <option value="low">Low</option>
+                <option value="moderate" selected>Moderate</option>
+                <option value="severe">Severe</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" id="pest-btn">Get Advisory</button>
+          </div>
+          <div id="pest-result" class="fert-result"></div>
         </div>
 
         <!-- ═══ SOIL PANEL ═══ -->
@@ -564,8 +582,8 @@
         <div class="panel" id="panel-market">
           <div class="panel-header market-panel-header">
             <div>
-              <h2 class="panel-title">💰 Live Market Tracker</h2>
-              <p class="panel-subtitle">Real-time agricultural commodity prices (API)</p>
+              <h2 class="panel-title">💰 Mandi Price Dataset</h2>
+              <p class="panel-subtitle">Local wholesale commodity-price reference</p>
             </div>
             <div class="market-status-box">
               <span class="live-pulse"></span>
@@ -581,14 +599,14 @@
           <!-- Loader -->
           <div class="market-loader-wrap" id="market-loader" style="display:flex">
              <div class="weather-spinner"></div>
-             <p>Connecting to Live Market Feed...</p>
+             <p>Loading mandi price dataset...</p>
           </div>
 
           <!-- Error -->
           <div class="market-error-wrap glass-card" id="market-error" style="display:none">
              <div class="weather-error-icon">⚠️</div>
-             <p>Failed to connect to the market API.</p>
-             <button class="btn btn-primary" id="market-retry-btn">Retry Connection</button>
+             <p>Could not load the local mandi-price dataset.</p>
+             <button class="btn btn-primary" id="market-retry-btn">Retry</button>
           </div>
 
           <!-- Table -->
@@ -597,9 +615,9 @@
               <thead>
                 <tr>
                   <th>Crop</th>
-                  <th>Current Price (₹/qtl)</th>
-                  <th>24h Change</th>
-                  <th>Trend</th>
+                  <th>Modal Price (₹/qtl)</th>
+                  <th>Market</th>
+                  <th>Dataset Date</th>
                 </tr>
               </thead>
               <tbody id="market-table-body">

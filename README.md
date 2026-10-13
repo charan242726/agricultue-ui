@@ -10,6 +10,7 @@ AgroEase is a modern frontend web application for smart farming workflows. It pr
 - Dashboard with multiple farming operation panels
 - Live weather integration pattern using OpenWeatherMap
 - Local data-driven recommendations for crops and farm planning
+- Static dataset-backed crop, fertilizer-type, and pest/disease advisory features — no ML hosting or backend required
 - Rich interactions: sidebar navigation, search overlay, notifications, charts, toasts, skeletons, and custom dropdowns
 
 ## Tech Stack
@@ -88,6 +89,17 @@ agri/
 - UI components and reusable helpers are in `js/ui.js`
 - Landing-specific behavior is in `js/script.js`
 - User session/profile is persisted in browser `localStorage`
+
+## Local Dataset Recommendations
+
+The dashboard runs its recommendation features entirely in the browser, so it is compatible with GitHub Pages.
+
+- `dataset/crop-recommendation dataset/Crop_recommendation.csv` supplies N/P/K, pH, weather, rainfall, and crop-label records for crop-suitability matches.
+- `dataset/fertilizers dataset/train.csv` supplies the fertilizer training records. The application uses compact aggregate profiles derived from this file rather than downloading the 33 MB CSV for every visitor.
+- `dataset/agricultural pest or disease dataset/tamil_agri_qa.csv` supplies the crop pest/disease advisory text.
+- `dataset/India Mandi Wholesale Prices dataset/commodity_price.csv` supplies the local mandi wholesale-price reference; it replaces the former simulated market feed.
+
+The fertilizer dataset identifies a fertilizer type, not a validated application dose. The app intentionally does not generate a urea quantity; users must confirm dose and timing with a soil-test laboratory or local agricultural officer.
 
 ## External Dependencies
 
