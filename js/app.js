@@ -593,6 +593,7 @@ function initDashboard() {
   setupLogout();
   setupSidebar();
   setupMobileMenu();
+  setupFarmProfile();
   loadDashboardStats();
   initOverviewChart();
   initFarmingScore();
@@ -664,22 +665,58 @@ function loadDashboardStats() {
   const trends = document.querySelectorAll('.stat-trend');
   trends.forEach(t => t.style.display = 'none');
 
-  // Populate with demo/default values after brief skeleton delay
+  // Populate from the farmer's locally saved profile.
   setTimeout(() => {
-    const stats = [
-      { el: statLand,    value: '25 Acres'  },
-      { el: statCrops,   value: '12'        },
-      { el: statYield,   value: '4.2 Tons'  },
-      { el: statRevenue, value: '₹8.5L'     },
-    ];
+    const profile = getFarmProfile();
+    const hasProfile = profile && Object.values(profile).some(value => value !== '' && value !== null && value !== undefined);
+    const stats = hasProfile ? [
+      { el: statLand, value: profile.land !== '' ? `${profile.land} Acres` : 'No data available' },
+      { el: statCrops, value: profile.crops !== '' ? profile.crops : 'No data available' },
+      { el: statYield, value: profile.yield !== '' ? `${profile.yield} Tons` : 'No data available' },
+      { el: statRevenue, value: profile.revenue !== '' ? `₹${Number(profile.revenue).toLocaleString('en-IN')}` : 'No data available' },
+    ] : ids.map(el => ({ el, value: 'No data available' }));
 
     stats.forEach(({ el, value }) => {
       if (el) el.textContent = value;
     });
 
-    // Restore trend badges
-    trends.forEach(t => t.style.display = '');
+    // Trend badges need historical data, which this profile form does not collect.
+    trends.forEach(t => t.style.display = 'none');
   }, 1200);
+}
+
+function getFarmProfile() {
+  try {
+    return JSON.parse(localStorage.getItem('agroease_farm_profile')) || null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function setupFarmProfile() {
+  const form = document.getElementById('farm-profile-form');
+  if (!form) return;
+
+  const fields = {
+    land: document.getElementById('farm-land'),
+    crops: document.getElementById('farm-crops'),
+    yield: document.getElementById('farm-yield'),
+    revenue: document.getElementById('farm-revenue')
+  };
+  const saved = getFarmProfile();
+  if (saved) Object.entries(fields).forEach(([key, field]) => { if (field) field.value = saved[key] ?? ''; });
+
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    const profile = Object.fromEntries(Object.entries(fields).map(([key, field]) => [key, field.value.trim()]));
+    if (!Object.values(profile).some(Boolean)) {
+      if (window.UI) UI.toast('Enter at least one farm value to save your profile.', 'error');
+      return;
+    }
+    localStorage.setItem('agroease_farm_profile', JSON.stringify(profile));
+    loadDashboardStats();
+    if (window.UI) UI.toast('Farm profile saved. Dashboard updated.');
+  });
 }
 
 
