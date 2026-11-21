@@ -1,0 +1,23 @@
+/* Keep both authentication forms fully visible, including their switch links. */
+body:has(.auth-container) { overflow-y: auto; }
+body:has(.auth-container) #root { padding: 24px 0; }
+.auth-container { min-height: 820px; }
+.auth-container .form-container { padding: 28px 48px; }
+.auth-container form { overflow: visible; max-height: none; padding: 0; }
+.auth-container form > * { flex-shrink: 0; }
+.auth-container .auth-title { font-size: 2rem; margin: 0 0 6px; }
+.auth-container .auth-subtitle { margin-bottom: 20px; }
+.auth-container .form-group { margin-bottom: 12px; gap: 5px; }
+.auth-container .form-group label { font-size: 0.8rem; }
+.auth-container .form-input { padding: 11px 16px; font-size: 0.9rem; }
+.auth-container .ui-dropdown-header { padding: 11px 16px; }
+.auth-container .btn-auth { padding: 13px 20px; margin-top: 8px; }
+.auth-container .toggle-auth { margin-top: 18px; padding-bottom: 0; }
+@media (max-width: 800px) {
+  body:has(.auth-container) #root { padding: 16px 0; }
+  .auth-container { min-height: 0; width: 100%; border-radius: 20px; }
+  .auth-container .form-container { position: relative; top: auto; width: 100%; height: auto; padding: 32px 24px; transform: none; }
+  .auth-container .sign-up-container { display: none; }
+  .auth-container.right-panel-active .sign-in-container { display: none; }
+  .auth-container.right-panel-active .sign-up-container { display: flex; opacity: 1; transform: none; }
+}
